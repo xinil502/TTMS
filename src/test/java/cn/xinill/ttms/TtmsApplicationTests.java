@@ -16,8 +16,7 @@ class TtmsApplicationTests {
     IMovieService movieService;
     @Test
     void contextLoads() {
-        Stack<Integer> stack;
-        
+        System.out.println(System.currentTimeMillis());
     }
 
 }

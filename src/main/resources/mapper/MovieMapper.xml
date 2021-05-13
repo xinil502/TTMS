@@ -14,7 +14,7 @@
     <insert id="insertMovie" parameterType="movie">
         INSERT
         INTO ttms.movie(title, actor, type, area, language, releaseDate, filmlen, introduction, rate, cover)
-        VALUES(#{title}, #{actor}, #{type}, #{area}, #{language}, #{releaseDate}, #{filmlen}, #{introduction}, #{rate}, #{introduction})
+        VALUES(#{title}, #{actor}, #{type}, #{area}, #{language}, #{releaseDate}, #{filmlen}, #{introduction}, #{rate}, #{cover})
     </insert>
 
     <select id="getMovieList" resultMap="movie">
