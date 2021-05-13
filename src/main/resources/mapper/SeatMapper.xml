@@ -7,18 +7,18 @@
 
     <insert id="insert">
         INSERT INTO
-        TTMS.seat(studio_id, seat_row, seat_col, seat_status)
+            ttms.seat(studio_id, seat_row, seat_col, seat_status)
         VALUES(#{studioId}, #{row}, #{col}, #{status})
     </insert>
 
     <delete id="deleteByStudioId" parameterType="_int">
-        DELETE FROM TTMS.seat
+        DELETE FROM ttms.seat
         WHERE studio_id = #{studioId}
     </delete>
 
     <select id="findSeatListByStudioId" parameterType="_int" resultMap="seat">
         SELECT *
-        FROM TTMS.seat
+        FROM ttms.seat
         WHERE studio_id = #{studioId}
     </select>
 

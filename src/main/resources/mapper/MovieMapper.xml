@@ -8,30 +8,30 @@
 
     <select id="countMovie" resultType="_int">
         SELECT count(*)
-        FROM TTMS.movie
+        FROM ttms.movie
     </select>
 
     <insert id="insertMovie" parameterType="movie">
         INSERT
-        INTO TTMS.movie(title, actor, type, area, language, releaseDate, filmlen, introduction, rate, cover)
+        INTO ttms.movie(title, actor, type, area, language, releaseDate, filmlen, introduction, rate, cover)
         VALUES(#{title}, #{actor}, #{type}, #{area}, #{language}, #{releaseDate}, #{filmlen}, #{introduction}, #{rate}, #{introduction})
     </insert>
 
     <select id="getMovieList" resultMap="movie">
         SELECT *
-        FROM TTMS.movie
+        FROM ttms.movie
         ORDER BY ${sortType} ${sortRule}
         LIMIT ${start}, ${len}
     </select>
 
     <select id="getMovie" parameterType="_int" resultMap="movie">
         SELECT *
-        FROM TTMS.movie
+        FROM ttms.movie
         WHERE mid = #{mid}
     </select>
 
     <delete id="deleteMovie" parameterType="_int">
-        DELETE FROM TTMS.movie WHERE mid = #{mid}
+        DELETE FROM ttms.movie WHERE mid = #{mid}
     </delete>
 
 

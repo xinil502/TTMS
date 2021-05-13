@@ -13,7 +13,7 @@ spring:
   # 数据源配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/TTMS?serverTimezone=UTC&useUnicode=true&characterEncoding=utf-8
+    url: jdbc:mysql://47.100.137.85:3306?serverTimezone=UTC&useUnicode=true&characterEncoding=utf-8
     username: root
     password: A1223176327a
     type: com.alibaba.druid.pool.DruidDataSource
@@ -86,8 +86,8 @@ mybatis:
     #是否开启全局缓存。 默认为 true。如果配置 false， 优先级高于 xml文件中的<cache/>
     cache-enabled: true
 
-
+#log4j2 日志配置
 logging:
-  config: log4j2-spring.xml  #默认名：log4j2-spring.xml
+  config: log4j2-spring.xml  #配置文件默认为：log4j2-spring.xml
   level:
     cn.jay.repository: trace

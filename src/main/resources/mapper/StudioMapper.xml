@@ -6,29 +6,28 @@
 <mapper namespace="cn.xinill.ttms.mapper.IStudioMapper">   <!--namespace必须为接口的全类名-->
 
     <insert id="insert">
-        INSERT INTO
-        TTMS.studio(studio_name, studio_row_count, studio_col_count)
+        INSERT INTO ttms.studio(studio_name, studio_row_count, studio_col_count)
         VALUES(#{name}, #{row}, #{col});
     </insert>
 
     <select id="findIdByName" parameterType="string" resultType="_int">
         SELECT studio_id
-        FROM TTMS.studio
+        FROM ttms.studio
         WHERE studio_name = #{name};
     </select>
 
     <delete id="deleteByStudioId" parameterType="_int">
-        DELETE FROM TTMS.studio
+        DELETE FROM ttms.studio
         WHERE studio_id = #{studioId};
     </delete>
 
     <select id="findAllStudio" resultMap="studio">
         SELECT *
-        FROM TTMS.studio;
+        FROM ttms.studio;
     </select>
 
     <update id="modifyStudio">
-        UPDATE TTMS.studio
+        UPDATE ttms.studio
         SET studio_name = #{name},
             studio_row_count = #{row},
             studio_col_count = #{col},
