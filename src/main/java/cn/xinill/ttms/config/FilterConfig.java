@@ -23,7 +23,7 @@ public class FilterConfig {
         FilterRegistrationBean registration = new FilterRegistrationBean();
         registration.addUrlPatterns("/*");
         registration.setFilter(new CrossFilter());
-        registration.setName("crosFilter");
+        registration.setName("crossFilter");
         registration.setOrder(1);
         return registration;
     }

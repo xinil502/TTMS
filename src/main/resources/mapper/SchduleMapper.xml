@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.xinill.ttms.mapper.IScheduleMapper">   <!--namespace必须为接口的全类名-->
+    <insert id="insertSchedule" parameterType="schedule">
+        INSERT INTO ttms.schedule(studio_id, movie_id, schedule_start_time, schedule_end_time, ticketPrice, schedule_status)
+        VALUES(#{studioId}, #{MovieId}, #{startTime}, #{endTime}, #{ticketPrice}, #{Status});
+    </insert>
+
+    <select id="selectScheduleById" parameterType="_int" resultMap="schedule">
+        SELECT *
+        FROM ttms.schedule
+        WHERE schedule_id = #{id}
+    </select>
+
+    <select id="selectAllScheduleList" resultMap="scheduleMap">
+        SELECT  movie.mid movieId,
+                movie.title movieName,
+               studio.studio_id studioId,
+               studio.studio_name studioName,
+               schedule.schedule_id scheduleId,
+               schedule.schedule_status status,
+               schedule.schedule_start_time startTime,
+               schedule.schedule_end_time endTime
+        FROM (SELECT * FROM ttms.schedule
+        <if test="movieId != -1">
+            WHERE schedule.movie_id = #{movieId}
+        </if>
+            ) schedule
+        LEFT JOIN ttms.movie movie ON movie.mid = schedule.movie_id
+        LEFT JOIN ttms.studio studio ON studio.studio_id = schedule.studio_id
+        ORDER BY ${sortName} ${sortRule}
+        LIMIT ${index}, ${len}
+    </select>
+
+    <select id="selectUserScheduleList" resultMap="scheduleMap">
+        SELECT  movie.mid movieId,
+                movie.title movieName,
+               studio.studio_id studioId,
+               studio.studio_name studioName,
+               schedule.schedule_id scheduleId,
+               schedule.schedule_status status,
+               schedule.schedule_start_time startTime,
+               schedule.schedule_end_time endTime
+        FROM (
+            SELECT * FROM ttms.schedule
+            WHERE schedule.schedule_status = 1
+            AND schedule_start_time > #{time}
+              <if test="movieId != -1">
+                AND schedule.movie_id = #{movieId}
+              </if>
+            ) schedule
+        LEFT JOIN ttms.movie movie ON movie.mid = schedule.movie_id
+        LEFT JOIN ttms.studio studio ON studio.studio_id = schedule.studio_id
+        ORDER BY ${sortName} ${sortRule}
+        LIMIT ${index}, ${len}
+    </select>
+
+    <update id="changeStatusById" parameterType="_int">
+        UPDATE ttms.schedule
+        SET schedule_status = #{status}
+        WHERE schedule_id = #{id}
+    </update>
+
+    <resultMap id="schedule" type="cn.xinill.ttms.pojo.Schedule">
+        <id property="id" column="schedule_id"/>
+        <result property="studioId" column="studio_id"/>
+        <result property="MovieId" column="movie_id"/>
+        <result property="startTime" column="schedule_start_time"/>
+        <result property="endTime" column="schedule_end_time"/>
+        <result property="ticketPrice" column="ticketPrice"/>
+        <result property="Status" column="schedule_status"/>
+    </resultMap>
+
+    <resultMap id="scheduleMap" type="cn.xinill.ttms.pojo.VOSchedule">
+        <id property="scheduleId" column="scheduleId"/>
+        <result property="movieId" column="movieId"/>
+        <result property="studioId" column="studioId"/>
+        <result property="movieName" column="movieName"/>
+        <result property="studioName" column="studioName"/>
+        <result property="status" column="status"/>
+        <result property="startTime" column="startTime"/>
+        <result property="endTime" column="endTime"/>
+    </resultMap>
+</mapper>

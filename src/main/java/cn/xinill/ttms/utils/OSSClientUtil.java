@@ -75,7 +75,7 @@ public class OSSClientUtil {
      *
      * @param url
      */
-    public void uploadImg2Oss(String url) throws cn.xinill.ttms.utils.ImgException {
+    public void uploadImg2Oss(String url) throws ImgException {
         File fileOnServer = new File(url);
         FileInputStream fin;
         try {
@@ -88,9 +88,9 @@ public class OSSClientUtil {
     }
 
 
-    public String uploadImg2Oss(MultipartFile file) throws cn.xinill.ttms.utils.ImgException {
+    public String uploadImg2Oss(MultipartFile file) throws ImgException {
         if (file.getSize() > 10 * 1024 * 1024) {
-            throw new cn.xinill.ttms.utils.ImgException("上传图片大小不能超过10M！");
+            throw new ImgException("上传图片大小不能超过10M！");
         }
         String originalFileName = file.getOriginalFilename();
         String suffix = originalFileName.substring(originalFileName.lastIndexOf(".")).toLowerCase();
@@ -100,7 +100,8 @@ public class OSSClientUtil {
             this.uploadFile2OSS(inputStream, name);
             return name;
         } catch (Exception e) {
-            throw new cn.xinill.ttms.utils.ImgException("图片上传失败");
+            e.printStackTrace();
+            throw new ImgException("图片上传失败");
         }
     }
 
