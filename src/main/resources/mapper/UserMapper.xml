@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.xinill.ttms.mapper.IUserMapper">   <!--namespace必须为接口的全类名-->
+
+    <!--开启缓存-->
+    <cache/>
+
+    <select id="findUserByPhone" parameterType="string" resultMap="user">
+        SELECT * FROM ttms.user WHERE phone = #{phone};
+    </select>
+
+    <!--    增加用户信息。-->
+    <insert id="insertUser" parameterType="user">
+        INSERT INTO ttms.user(phone) VALUES(#{phone});
+    </insert>
+
+<!--    <select id="findUserByUid" parameterType="_int" resultMap="user">-->
+<!--        SELECT * FROM photoapp.user WHERE uid = #{uid};-->
+<!--    </select>-->
+
+<!--    <update id="updateUserInform" parameterType="user">-->
+<!--        UPDATE photoapp.user-->
+<!--        <set>-->
+<!--            <if test="username != null">-->
+<!--                username = #{username},-->
+<!--            </if>-->
+<!--            <if test="portrait != null">-->
+<!--                portrait = #{portrait},-->
+<!--            </if>-->
+<!--            <if test="gender != null">-->
+<!--                gender = #{gender},-->
+<!--            </if>-->
+<!--            <if test="birth != null">-->
+<!--                birth = #{birth},-->
+<!--            </if>-->
+<!--            <if test="age != null">-->
+<!--                age = #{age},-->
+<!--            </if>-->
+<!--            <if test="introduce != null">-->
+<!--                introduce = #{introduce}-->
+<!--            </if>-->
+<!--        </set>-->
+<!--        WHERE uid = #{uid};-->
+<!--    </update>-->
+
+<!--    <update id="updateUserPwd" parameterType="user">-->
+<!--        UPDATE photoapp.user SET pwd = #{password} WHERE uid = #{uid};-->
+<!--    </update>-->
+
+    <resultMap id="user" type="cn.xinill.ttms.po.User">
+        <id property="userId" column="user_id"/>
+        <result property="username" column="username"/>
+        <result property="phone" column="phone"/>
+        <result property="password" column="password"/>
+        <result property="age" column="age"/>
+        <result property="gender" column="gender"/>
+        <result property="email" column="email"/>
+        <result property="introduce" column="introduce"/>
+    </resultMap>
+</mapper>
+
+

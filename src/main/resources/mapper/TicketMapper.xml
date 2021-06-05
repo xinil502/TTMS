@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.xinill.ttms.mapper.ITicketMapper">   <!--namespace必须为接口的全类名-->
+
+    <!--开启缓存-->
+    <cache/>
+
+    <insert id="insertTicket" parameterType="_int">
+        INSERT INTO ttms.ticket(user_id, schedule_id, seat_id)
+        VALUES('-1', #{scheduleId}, #{seatId});
+    </insert>
+
+    <select id="findTicketByScheduleId" parameterType="_int" resultMap="voticket">
+        SELECT ticket.ticket_id ticket_id,
+               ticket.ticket_status ticket_status,
+               seat.seat_row seat_row,
+               seat.seat_col seat_col,
+               seat.seat_status seat_status
+        FROM (SELECT * FROM ttms.ticket WHERE schedule_id = #{scheduleId}) ticket
+        LEFT JOIN ttms.seat seat
+        ON ticket.seat_id = seat.seat_id;
+    </select>
+    <select id="countTicketCanBuy" resultType="_int">
+        SELECT count(*)
+        FROM (SELECT *
+              FROM ttms.ticket
+              WHERE ticket_id in ${ticketsId}
+                AND ticket_status = 1) as ticket
+        JOIN ttms.seat seat
+        ON ticket.seat_id = seat.seat_id AND seat.seat_status = 1;
+    </select>
+    <update id="updateTicket">
+        UPDATE ttms.ticket
+        SET ticket_status = #{ticketStatus},
+            ticket_time = #{time},
+            user_id =
+            <if test="userId == null">
+                '-1'
+            </if>
+            <if test="userId != null">
+                #{userId}
+            </if>
+        WHERE ticket_id in ${ticketsId}
+          AND ticket_status = 1;
+    </update>
+
+
+    <resultMap id="voticket" type="cn.xinill.ttms.vo.VOTicket">
+        <id property="ticketId" column="ticket_id"/>
+        <result property="row" column="seat_row"/>
+        <result property="col" column="seat_col"/>
+        <result property="ticketStatus" column="ticket_status"/>
+        <result property="seatStatus" column="seat_status"/>
+    </resultMap>
+</mapper>
