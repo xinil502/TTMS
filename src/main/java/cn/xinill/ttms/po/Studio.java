@@ -1,18 +1,18 @@
-package cn.xinill.ttms.pojo;
+package cn.xinill.ttms.po;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 /**
  * @Author: Xinil
  * @Date: 2021/5/8 19:49
  */
-public class Studio {
+public class Studio implements Serializable {
     private Integer id;
     private String name;
     private Integer row;
     private Integer col;
     private Integer status;
-    private Integer[][] seatStatus;
 
     public Studio() {
     }
@@ -57,32 +57,14 @@ public class Studio {
         this.status = status;
     }
 
-    public Integer[][] getSeatStatus() {
-        return seatStatus;
-    }
-
-    public void setSeatStatus(Integer[][] seatStatus) {
-        this.seatStatus = seatStatus;
-    }
-
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Studio{" + "id=")
-                .append(id)
-                .append(", name='")
-                .append(name)
-                .append('\'')
-                .append(", row=")
-                .append(row)
-                .append(", col=")
-                .append(col)
-                .append(", status=")
-                .append(status);
-        for(Integer[] integers: seatStatus){
-            sb.append(Arrays.toString(integers));
-        }
-        sb.append('}');
-        return sb.toString();
+        return "Studio{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", row=" + row +
+                ", col=" + col +
+                ", status=" + status +
+                '}';
     }
 }

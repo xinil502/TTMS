@@ -4,10 +4,27 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="cn.xinill.ttms.mapper.IScheduleMapper">   <!--namespace必须为接口的全类名-->
+    <!--开启缓存-->
+    <cache/>
+
+    <select id="countStudioUsed" resultType="_int">
+        SELECT count(*)
+        FROM ttms.schedule
+        WHERE studio_id = #{studioId}
+          AND NOT (#{startTime} >= schedule_end_time OR #{endTime} &lt;= schedule_start_time);
+    </select>
+
     <insert id="insertSchedule" parameterType="schedule">
         INSERT INTO ttms.schedule(studio_id, movie_id, schedule_start_time, schedule_end_time, ticketPrice, schedule_status)
         VALUES(#{studioId}, #{MovieId}, #{startTime}, #{endTime}, #{ticketPrice}, #{Status});
     </insert>
+
+    <select id="selectIdBySchedule" parameterType="schedule" resultType="_int">
+        SELECT MAX(schedule_id)
+        FROM ttms.schedule
+        WHERE studio_id = #{studioId}
+          AND schedule_start_time = #{startTime};
+    </select>
 
     <select id="selectScheduleById" parameterType="_int" resultMap="schedule">
         SELECT *
@@ -15,15 +32,30 @@
         WHERE schedule_id = #{id}
     </select>
 
-    <select id="selectAllScheduleList" resultMap="scheduleMap">
-        SELECT  movie.mid movieId,
-                movie.title movieName,
+    <select id="countAllSchedule" parameterType="_int" resultType="_int">
+        SELECT COUNT(*)
+        FROM ttms.schedule
+        WHERE movie_id = #{movieId}
+    </select>
+
+    <select id="countUserSchedule" parameterType="_int" resultType="_int">
+        SELECT COUNT(*)
+        FROM ttms.schedule
+        WHERE movie_id = #{movieId}
+          AND schedule.schedule_status = 1
+          AND schedule_start_time > #{time}
+    </select>
+
+    <select id="selectAllScheduleList" resultMap="voschedule">
+        SELECT movie.mid movieId,
+               movie.title movieName,
                studio.studio_id studioId,
                studio.studio_name studioName,
                schedule.schedule_id scheduleId,
-               schedule.schedule_status status,
                schedule.schedule_start_time startTime,
-               schedule.schedule_end_time endTime
+               schedule.schedule_end_time endTime,
+               schedule.ticketPrice ticketPrice,
+               schedule.schedule_status status
         FROM (SELECT * FROM ttms.schedule
         <if test="movieId != -1">
             WHERE schedule.movie_id = #{movieId}
@@ -35,15 +67,16 @@
         LIMIT ${index}, ${len}
     </select>
 
-    <select id="selectUserScheduleList" resultMap="scheduleMap">
-        SELECT  movie.mid movieId,
-                movie.title movieName,
+    <select id="selectUserScheduleList" resultMap="voschedule">
+        SELECT movie.mid movieId,
+               movie.title movieName,
                studio.studio_id studioId,
                studio.studio_name studioName,
                schedule.schedule_id scheduleId,
-               schedule.schedule_status status,
                schedule.schedule_start_time startTime,
-               schedule.schedule_end_time endTime
+               schedule.schedule_end_time endTime,
+               schedule.ticketPrice ticketPrice,
+               schedule.schedule_status status
         FROM (
             SELECT * FROM ttms.schedule
             WHERE schedule.schedule_status = 1
@@ -64,8 +97,8 @@
         WHERE schedule_id = #{id}
     </update>
 
-    <resultMap id="schedule" type="cn.xinill.ttms.pojo.Schedule">
-        <id property="id" column="schedule_id"/>
+    <resultMap id="schedule" type="cn.xinill.ttms.po.Schedule">
+        <id property="scheduleId" column="schedule_id"/>
         <result property="studioId" column="studio_id"/>
         <result property="MovieId" column="movie_id"/>
         <result property="startTime" column="schedule_start_time"/>
@@ -74,7 +107,7 @@
         <result property="Status" column="schedule_status"/>
     </resultMap>
 
-    <resultMap id="scheduleMap" type="cn.xinill.ttms.pojo.VOSchedule">
+    <resultMap id="voschedule" type="cn.xinill.ttms.vo.VOSchedule">
         <id property="scheduleId" column="scheduleId"/>
         <result property="movieId" column="movieId"/>
         <result property="studioId" column="studioId"/>
@@ -83,5 +116,6 @@
         <result property="status" column="status"/>
         <result property="startTime" column="startTime"/>
         <result property="endTime" column="endTime"/>
+        <result property="ticketPrice" column="ticketPrice"/>
     </resultMap>
 </mapper>

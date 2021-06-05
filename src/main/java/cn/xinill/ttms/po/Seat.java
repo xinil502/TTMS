@@ -1,10 +1,12 @@
-package cn.xinill.ttms.pojo;
+package cn.xinill.ttms.po;
+
+import java.io.Serializable;
 
 /**
  * @Author: Xinil
  * @Date: 2021/5/9 15:41
  */
-public class Seat {
+public class Seat implements Serializable {
     private Integer seatId;
     private Integer studioId;
     private Integer row;

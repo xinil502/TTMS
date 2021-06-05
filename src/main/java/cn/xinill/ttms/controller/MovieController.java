@@ -1,11 +1,11 @@
 package cn.xinill.ttms.controller;
 
 import cn.xinill.ttms.common.ServerResponse;
-import cn.xinill.ttms.pojo.VOIntegerId;
-import cn.xinill.ttms.pojo.VOMovie;
-import cn.xinill.ttms.pojo.VOMovieList;
+import cn.xinill.ttms.vo.VOIntegerId;
+import cn.xinill.ttms.vo.VOMovie;
+import cn.xinill.ttms.vo.VOMovieList;
 import cn.xinill.ttms.service.IMovieService;
-import cn.xinill.ttms.utils.ImgException;
+import cn.xinill.ttms.utils.MyException;
 import cn.xinill.ttms.utils.OSSClientUtil;
 
 import org.apache.logging.log4j.LogManager;
@@ -46,7 +46,7 @@ public class MovieController {
             String urlFileName = ossClientUtil.uploadImg2Oss(cover);
             logger.info("[上传图片]：上传成功，文件名:"+urlFileName);
             return ServerResponse.createBySuccessMsgData("上传图片成功", urlFileName);
-        } catch (ImgException e) {
+        } catch (MyException e) {
             logger.error("[上传图片]：/movie/upload-cover 接口异常");
             e.printStackTrace();
             return ServerResponse.createByErrorMsg("服务器异常");
@@ -80,24 +80,19 @@ public class MovieController {
     public ServerResponse<VOMovieList> getMovieList(@RequestParam String sortType,
                                                     @RequestParam String sortRule,
                                                     @RequestParam int page,
-                                                    @RequestParam int pageLimit){
+                                                    @RequestParam int pageLimit,
+                                                    String search){
 
         try {
-            logger.info("[获取剧目信息列表]：sortType="+sortType+"  sortRole="+sortRule+"  page="+page+"    pageLimit="+pageLimit);
+            logger.info("[获取剧目信息列表]：sortType="+sortType+"  sortRole="+sortRule+"  page="+page+"    pageLimit="+pageLimit+"    search="+search);
             if(!sortType.equals("title") && !sortType.equals("releaseDate") && !sortType.equals("rate")){
                 logger.warn("[获取剧目信息列表]：排序参数不合法");
                 return ServerResponse.createByErrorMsg("排序参数不合法");
             }
 
-            if(sortRule.equals("down")){
-                sortRule = "DESC";
-            }else{
-                sortRule = "ASC";
-            }
-
             int start = (page-1)*pageLimit;
             logger.info("[获取剧目信息列表]： 查询信息成功");
-            VOMovieList movieList = movieService.getMovieList(sortType, sortRule, start, pageLimit);
+            VOMovieList movieList = movieService.getMovieList(sortType, sortRule, start, pageLimit, search);
             return ServerResponse.createBySuccessMsgData("查询电影成功",movieList);
         } catch (Exception e) {
             logger.error("[获取剧目信息列表]： /movie/getList 接口异常");

@@ -79,7 +79,7 @@ spring:
 #配置mybatis
 mybatis:
   #给mapper.xml 中需要使用的实体类起别名，直接扫描包的形式进行操作。
-  type-aliases-package: cn.xinill.ttms.pojo
+  type-aliases-package: cn.xinill.ttms.po
   #配置mapper.xml的映射  支持通配符
   mapper-locations: classpath:mapper/*Mapper.xml
   configuration:

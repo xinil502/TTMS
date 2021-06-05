@@ -1,22 +1,20 @@
 package cn.xinill.ttms;
 
-import cn.xinill.ttms.pojo.Movie;
-import cn.xinill.ttms.service.IMovieService;
+import cn.xinill.ttms.service.impl.TokenServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.util.List;
-import java.util.Stack;
 
 @SpringBootTest
 class TtmsApplicationTests {
 
     @Autowired
-    IMovieService movieService;
+    TokenServiceImpl tokenService;
     @Test
     void contextLoads() {
-        System.out.println(System.currentTimeMillis());
+        String token = tokenService.creatUserToken(1,1000);
+        System.out.println(token);
+        System.out.println(tokenService.verifyUserToken(token));
     }
 
 }

@@ -1,6 +1,6 @@
 package cn.xinill.ttms.service;
 
-import cn.xinill.ttms.pojo.Employee;
+import cn.xinill.ttms.po.Employee;
 
 import java.util.List;
 

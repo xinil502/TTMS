@@ -1,8 +1,8 @@
 package cn.xinill.ttms.controller;
 
 import cn.xinill.ttms.common.ServerResponse;
-import cn.xinill.ttms.pojo.Employee;
-import cn.xinill.ttms.pojo.VOIntegerId;
+import cn.xinill.ttms.po.Employee;
+import cn.xinill.ttms.vo.VOIntegerId;
 import cn.xinill.ttms.service.IEmployeeService;
 import cn.xinill.ttms.service.ITokenService;
 
@@ -23,6 +23,7 @@ import java.util.List;
 @RequestMapping(value = "/staff")
 public class EmployeeController {
 
+    private final int rememberMe = 7*24*60*60;
     private IEmployeeService employeeService;
     private ITokenService tokenService;
     private Logger logger = LogManager.getLogger(LogManager.ROOT_LOGGER_NAME);
@@ -86,7 +87,7 @@ public class EmployeeController {
                 return ServerResponse.createByErrorMsgData("账号已被禁用", null);
             }
             logger.info("[员工登录]：登陆成功");
-            response.addHeader("token", tokenService.creatUserToken(employee.getEmpId())); //响应头添加token
+            response.addHeader("token", tokenService.creatUserToken(employee.getEmpId(), rememberMe)); //响应头添加token
             return ServerResponse.createBySuccessMsgData("登陆成功", employee.getRole());
         } catch (Exception e) {
             logger.error("[员工登录]： /staff/login 接口异常");

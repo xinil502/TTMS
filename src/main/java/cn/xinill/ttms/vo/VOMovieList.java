@@ -1,4 +1,4 @@
-package cn.xinill.ttms.pojo;
+package cn.xinill.ttms.vo;
 
 import java.util.List;
 

@@ -15,9 +15,9 @@ import java.util.Map;
  */
 public class JWTTokenUtil {
     //设置过期时间
-    private static final long EXPIRE_DATE=24*60*60*1000; //24小时过期
+    private static final long EXPIRE_DATE=8*24*60*60*1000; //8天过期
     //token秘钥
-    private static final String TOKEN_SECRET = "uGuwu2020xinillBhuZCfasfaUUHufgQWE";
+    private static final String TOKEN_SECRET = "uGuwu2021xinillBhuZCfasfaUUHufgQWE";
 
     /**
      * 生成token
@@ -38,6 +38,7 @@ public class JWTTokenUtil {
 
             //携带userId信息，生成签名
             token = JWT.create()
+                    .withIssuer("auth0")
                     //添加头部信息
                     .withHeader(header)
                     .withClaim("userId",userId)

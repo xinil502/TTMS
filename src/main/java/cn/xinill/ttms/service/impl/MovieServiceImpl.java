@@ -1,9 +1,9 @@
 package cn.xinill.ttms.service.impl;
 
 import cn.xinill.ttms.mapper.IMovieMapper;
-import cn.xinill.ttms.pojo.Movie;
-import cn.xinill.ttms.pojo.VOMovie;
-import cn.xinill.ttms.pojo.VOMovieList;
+import cn.xinill.ttms.po.Movie;
+import cn.xinill.ttms.vo.VOMovie;
+import cn.xinill.ttms.vo.VOMovieList;
 import cn.xinill.ttms.service.IMovieService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -73,14 +73,24 @@ public class MovieServiceImpl implements IMovieService {
     }
 
     @Override
-    public VOMovieList getMovieList(String sortType, String sortRule, int start, int len) {
+    public VOMovieList getMovieList(String sortType, String sortRule, int start, int len, String search) {
         VOMovieList movieList = new VOMovieList();
 
+
+        if(sortRule.equals("down")){
+            sortRule = "DESC";
+        }else{
+            sortRule = "ASC";
+        }
+
+        if(search != null){
+            search = '%'+search+'%';
+        }
         //获取总电影数
         movieList.setSum(movieMapper.countMovie());
 
         //获取当前页电影信息
-        List<Movie> list = movieMapper.getMovieList(sortType, sortRule, start, len);
+        List<Movie> list = movieMapper.getMovieList(sortType, sortRule, start, len, search);
         List<VOMovie> voMovieList = new ArrayList<>();
         for(Movie movie: list){
             VOMovie voMovie = new VOMovie();

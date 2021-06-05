@@ -1,7 +1,7 @@
 package cn.xinill.ttms.service.impl;
 
 import cn.xinill.ttms.mapper.IEmployeeMapper;
-import cn.xinill.ttms.pojo.Employee;
+import cn.xinill.ttms.po.Employee;
 import cn.xinill.ttms.service.IEmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

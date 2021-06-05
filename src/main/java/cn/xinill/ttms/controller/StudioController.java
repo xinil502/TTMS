@@ -1,8 +1,9 @@
 package cn.xinill.ttms.controller;
 
 import cn.xinill.ttms.common.ServerResponse;
-import cn.xinill.ttms.pojo.Studio;
-import cn.xinill.ttms.pojo.VOIntegerId;
+import cn.xinill.ttms.po.Seat;
+import cn.xinill.ttms.po.Studio;
+import cn.xinill.ttms.vo.VOIntegerId;
 import cn.xinill.ttms.service.IStudioService;
 
 import org.apache.logging.log4j.LogManager;
@@ -66,6 +67,45 @@ public class StudioController {
     }
 
     @ResponseBody
+    @RequestMapping(method = RequestMethod.POST, value = "/seat/modified")
+    public ServerResponse<Boolean> updateSeatStatus(@RequestBody Seat seat){
+        try{
+            logger.info("[修改演出厅座位状态]：seat = "+seat);
+            if(studioService.updateSeatStatus(seat)){
+                logger.info("[修改演出厅座位状态]：修改成功");
+                return ServerResponse.createBySuccessMsgData("修改成功", true);
+            }else{
+                logger.warn("[修改演出厅座位状态]：修改失败");
+                return ServerResponse.createBySuccessMsgData("座位不存在", false);
+            }
+        }catch(Exception e){
+            logger.error("[修改演出厅座位状态]：/seat/modified  接口异常");
+            e.printStackTrace();
+            return ServerResponse.createByErrorMsgData("服务器异常", false);
+        }
+    }
+
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.POST, value = "/delete")
+    public ServerResponse<Boolean> delete(@RequestBody VOIntegerId studioId){
+        try{
+            logger.info("[删除演出厅]：演出厅id："+studioId.getId());
+            if(studioService.deleteStudio(studioId.getId())){
+                logger.info("[删除演出厅]：删除演出厅成功");
+                return ServerResponse.createBySuccessMsgData("删除演出厅成功", true);
+            }else{
+                logger.warn("[删除演出厅]：演出厅不存在");
+                return ServerResponse.createBySuccessMsgData("演出厅不存在", false);
+            }
+        }catch(Exception e){
+            logger.error("[删除演出厅]：/delete 接口异常");
+            e.printStackTrace();
+            return ServerResponse.createByErrorMsgData("服务器异常", false);
+        }
+    }
+
+
+    @ResponseBody
     @RequestMapping(method = RequestMethod.GET, value = "/query-list")
     public ServerResponse<List<Studio>> findStudio(){
         try{
@@ -81,19 +121,15 @@ public class StudioController {
     }
 
     @ResponseBody
-    @RequestMapping(method = RequestMethod.POST, value = "/delete")
-    public ServerResponse<Boolean> delete(@RequestBody VOIntegerId studioId){
+    @RequestMapping(method = RequestMethod.GET, value = "/query-seats")
+    public ServerResponse<List<Seat>> findSeat(@RequestParam Integer studioId){
         try{
-            logger.info("[删除演出厅]：演出厅id："+studioId.getId());
-            if(studioService.deleteStudio(studioId.getId())){
-                logger.info("[删除演出厅]：删除演出厅成功");
-                return ServerResponse.createBySuccessMsgData("删除演出厅成功", true);
-            }else{
-                logger.warn("[删除演出厅]：演出厅不存在");
-                return ServerResponse.createBySuccessMsgData("演出厅不存在", true);
-            }
+            logger.info("[查询演出厅座位列表]：正在查找中...");
+            List<Seat> list = studioService.findSeatListByStudioId(studioId);
+            logger.info("[查询演出厅座位列表]：查询演出厅成功");
+            return ServerResponse.createBySuccessMsgData("查询演出厅成功", list);
         }catch(Exception e){
-            logger.error("[删除演出厅]：服务器异常");
+            logger.error("[查询演出厅座位列表]：/studio/query-seats  接口异常");
             e.printStackTrace();
             return ServerResponse.createByErrorMsgData("服务器异常", null);
         }

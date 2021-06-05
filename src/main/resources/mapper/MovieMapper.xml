@@ -5,6 +5,8 @@
 
 <mapper namespace="cn.xinill.ttms.mapper.IMovieMapper">   <!--namespace必须为接口的全类名-->
 
+    <!--开启缓存-->
+    <cache/>
 
     <select id="countMovie" resultType="_int">
         SELECT count(*)
@@ -20,6 +22,9 @@
     <select id="getMovieList" resultMap="movie">
         SELECT *
         FROM ttms.movie
+        <if test="search != null">
+            WHERE title LIKE #{search}
+        </if>
         ORDER BY ${sortType} ${sortRule}
         LIMIT ${start}, ${len}
     </select>
@@ -35,7 +40,7 @@
     </delete>
 
 
-    <resultMap id="movie" type="cn.xinill.ttms.pojo.Movie">
+    <resultMap id="movie" type="cn.xinill.ttms.po.Movie">
         <id property="mid" column="mid"/>
         <result property="title" column="title"/>
         <result property="actor" column="actor"/>

@@ -4,6 +4,8 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="cn.xinill.ttms.mapper.IStudioMapper">   <!--namespace必须为接口的全类名-->
+    <!--开启缓存-->
+    <cache/>
 
     <insert id="insert">
         INSERT INTO ttms.studio(studio_name, studio_row_count, studio_col_count)
@@ -26,6 +28,12 @@
         FROM ttms.studio;
     </select>
 
+    <select id="findStudio" resultMap="studio">
+        SELECT *
+        FROM ttms.studio
+        WHERE studio_id = #{studioId};
+    </select>
+
     <update id="modifyStudio">
         UPDATE ttms.studio
         SET studio_name = #{name},
@@ -35,7 +43,7 @@
         WHERE studio_id = #{id};
     </update>
 
-    <resultMap id="studio" type="cn.xinill.ttms.pojo.Studio">
+    <resultMap id="studio" type="cn.xinill.ttms.po.Studio">
         <id property="id" column="studio_id"/>
         <result property="name" column="studio_name"/>
         <result property="row" column="studio_row_count"/>

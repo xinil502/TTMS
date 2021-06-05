@@ -1,6 +1,6 @@
 package cn.xinill.ttms.mapper;
 
-import cn.xinill.ttms.pojo.Seat;
+import cn.xinill.ttms.po.Seat;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -26,4 +26,9 @@ public interface ISeatMapper {
      * 查询影厅所有座位
      */
     List<Seat> findSeatListByStudioId(int studioId);
+
+    /**
+     * 修改演出厅座位状态
+     */
+    int updateStatus(Seat seat);
 }

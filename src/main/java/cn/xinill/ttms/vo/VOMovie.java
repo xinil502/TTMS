@@ -1,12 +1,13 @@
-package cn.xinill.ttms.pojo;
+package cn.xinill.ttms.vo;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 /**
  * @Author: Xinil
  * @Date: 2021/5/9 19:06
  */
-public class VOMovie {
+public class VOMovie implements Serializable {
     private Integer mid;
     private String title;
     private String[] actor;

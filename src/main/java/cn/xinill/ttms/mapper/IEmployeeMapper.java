@@ -1,6 +1,6 @@
 package cn.xinill.ttms.mapper;
 
-import cn.xinill.ttms.pojo.Employee;
+import cn.xinill.ttms.po.Employee;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;

@@ -1,12 +1,14 @@
-package cn.xinill.ttms.pojo;
+package cn.xinill.ttms.po;
 
 import com.alibaba.fastjson.annotation.JSONField;
+
+import java.io.Serializable;
 
 /**
  * @Author: Xinil
  * @Date: 2021/5/9 15:59
  */
-public class Employee {
+public class Employee implements Serializable {
     private Integer empId;
     private String username;
     private String password;

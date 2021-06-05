@@ -1,6 +1,6 @@
 package cn.xinill.ttms.mapper;
 
-import cn.xinill.ttms.pojo.Movie;
+import cn.xinill.ttms.po.Movie;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -25,7 +25,7 @@ public interface IMovieMapper {
     /**
      * 获取电影列表
      */
-    List<Movie> getMovieList(String sortType, String sortRule, int start, int len);
+    List<Movie> getMovieList(String sortType, String sortRule, int start, int len, String search);
 
     /**
      * 查询电影详细信息

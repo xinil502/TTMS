@@ -1,6 +1,6 @@
 package cn.xinill.ttms.mapper;
 
-import cn.xinill.ttms.pojo.Studio;
+import cn.xinill.ttms.po.Studio;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -31,6 +31,11 @@ public interface IStudioMapper {
      * 查询所有演出厅信息
      */
     List<Studio> findAllStudio();
+
+    /**
+     * 根据演出厅 id查询演出厅信息
+     */
+    Studio findStudio(int studioId);
 
     /**
      * 修改影厅信息

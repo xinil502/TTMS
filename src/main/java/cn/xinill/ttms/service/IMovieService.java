@@ -1,7 +1,7 @@
 package cn.xinill.ttms.service;
 
-import cn.xinill.ttms.pojo.VOMovie;
-import cn.xinill.ttms.pojo.VOMovieList;
+import cn.xinill.ttms.vo.VOMovie;
+import cn.xinill.ttms.vo.VOMovieList;
 
 /**
  * @Author: Xinil
@@ -23,7 +23,7 @@ public interface IMovieService {
      * @param len
      * @return
      */
-    VOMovieList getMovieList(String sortType, String sortRule, int start, int len);
+    VOMovieList getMovieList(String sortType, String sortRule, int start, int len, String search);
 
     /**
      * 查询电影详细信息

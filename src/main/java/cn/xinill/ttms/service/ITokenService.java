@@ -8,9 +8,10 @@ public interface ITokenService {
     /**
      * 由id生成token
      * @param id
+     * @param seconds token过期时间，秒（token不限制过期时间，过期时间通过 redis限制）
      * @return
      */
-    String creatUserToken(int id);
+    String creatUserToken(int id, int seconds);
 
     /**
      * 由token转为id

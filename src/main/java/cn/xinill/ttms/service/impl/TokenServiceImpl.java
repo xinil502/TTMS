@@ -26,10 +26,10 @@ public class TokenServiceImpl implements ITokenService {
     }
 
     @Override
-    public String creatUserToken(int id) {
-        String token = JWTTokenUtil.createToken(id);
+    public String creatUserToken(int userId, int seconds) {
+        String token = JWTTokenUtil.createToken(userId);
         token = token + System.currentTimeMillis() + (new Random().nextInt(899999)+100000);
-        if(redisUtil.set(""+id, token, -1)){
+        if(redisUtil.set(token, userId, seconds)){
             return token;
         }else{
             return null;
@@ -39,23 +39,23 @@ public class TokenServiceImpl implements ITokenService {
     @Override
     public int verifyUserToken(String token) {
         try {
-            //token解密id，是否过期。
-            Map<String, Claim> map = JWTTokenUtil.verifyToken(token);
-            if(map == null){
+//            //token解密userId
+//            Map<String, Claim> map = JWTTokenUtil.verifyToken(token);
+//            if(map == null){
+//                return -1;
+//            }
+//            int userId = map.get("userId").asInt();
+
+            //查找token，查看登陆是否过期。
+            Object value = redisUtil.get(token);
+            if(value != null){
+                return (Integer)value;
+            }else{
                 return -1;
-            }
-            int empId = map.get("userId").asInt();
-
-
-            //通过id查找token，查看是否被覆盖。
-            Object value = redisUtil.get(""+empId);
-            if(value.equals(token)){
-                return empId;
             }
         } catch (Exception e) {
             e.printStackTrace();
             return -1;
         }
-        return -1;
     }
 }

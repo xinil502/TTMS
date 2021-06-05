@@ -4,6 +4,8 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="cn.xinill.ttms.mapper.IEmployeeMapper">   <!--namespace必须为接口的全类名-->
+    <!--开启缓存-->
+    <cache/>
 
     <select id="findEmpByNo" parameterType="string" resultType="_int">
         SELECT COUNT(emp_no)
@@ -46,7 +48,7 @@
         WHERE emp_no = #{username}
     </update>
 
-    <resultMap id="employee" type="cn.xinill.ttms.pojo.Employee">
+    <resultMap id="employee" type="cn.xinill.ttms.po.Employee">
         <id property="empId" column="emp_id"/>
         <result property="username" column="emp_no"/>
         <result property="password" column="emp_pwd"/>
