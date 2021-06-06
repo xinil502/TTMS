@@ -1,5 +1,6 @@
 package cn.xinill.ttms.vo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -14,5 +15,6 @@ public class VOTicket implements Serializable {
     private Integer row;
     private Integer col;
     private Integer ticketStatus;
+    @JsonIgnore
     private Integer seatStatus;
 }

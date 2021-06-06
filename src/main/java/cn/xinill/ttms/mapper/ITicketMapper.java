@@ -42,4 +42,7 @@ public interface ITicketMapper {
      * @return
      */
     int updateTicket(String ticketsId, long time, int ticketStatus, Integer userId);
+
+
+    double getPrice(int ticketId);
 }

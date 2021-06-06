@@ -45,7 +45,13 @@
     <update id="updatePwd" parameterType="employee">
         UPDATE ttms.employee
         SET emp_pwd = #{passowrd}
-        WHERE emp_no = #{username}
+        WHERE emp_id = #{empId}
+    </update>
+
+    <update id="resetPwd" parameterType="employee">
+        UPDATE ttms.employee
+        SET emp_pwd = 12345678
+        WHERE emp_id = #{empId}
     </update>
 
     <resultMap id="employee" type="cn.xinill.ttms.po.Employee">

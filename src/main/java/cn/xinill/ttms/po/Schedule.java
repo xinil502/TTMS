@@ -15,6 +15,6 @@ public class Schedule implements Serializable {
     private Integer MovieId;
     private Long startTime;
     private Long endTime;
-    private Integer ticketPrice;
+    private Double ticketPrice;
     private Integer Status;
 }

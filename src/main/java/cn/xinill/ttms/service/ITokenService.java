@@ -7,16 +7,17 @@ package cn.xinill.ttms.service;
 public interface ITokenService {
     /**
      * 由id生成token
-     * @param id
+     * @param userId
+     * @param role
      * @param seconds token过期时间，秒（token不限制过期时间，过期时间通过 redis限制）
      * @return
      */
-    String creatUserToken(int id, int seconds);
+    String creatUserToken(int userId, int role, int seconds);
 
     /**
      * 由token转为id
      * @param token
      * @return
      */
-    int verifyUserToken(String token);
+    int[] verifyUserToken(String token);
 }

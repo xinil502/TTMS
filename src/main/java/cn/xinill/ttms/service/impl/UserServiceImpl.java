@@ -3,16 +3,19 @@ package cn.xinill.ttms.service.impl;
 import cn.xinill.ttms.mapper.IUserMapper;
 import cn.xinill.ttms.po.User;
 import cn.xinill.ttms.service.IUserService;
+import cn.xinill.ttms.utils.MyException;
+import cn.xinill.ttms.utils.OSSClientUtil;
 import cn.xinill.ttms.utils.RedisUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class UserServiceImpl implements IUserService {
 
     private IUserMapper userMapper;
-    private RedisUtil redisUtil;
+    private OSSClientUtil ossClientUtil;
 
     @Autowired(required = false)
     public void setUserMapper(IUserMapper userMapper) {
@@ -20,8 +23,8 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Autowired
-    public void setRedisUtil(RedisUtil redisUtil) {
-        this.redisUtil = redisUtil;
+    public void setOssClientUtil(OSSClientUtil ossClientUtil) {
+        this.ossClientUtil = ossClientUtil;
     }
 
     @Override
@@ -46,43 +49,32 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public int logIn(String phone) {
-        User findUser = userMapper.findUserByPhone(phone);
-        if(findUser!=null){
-            return findUser.getUserId();
+        //未注册用户进行注册
+        if (!phoneExist(phone)){
+            logOn(phone);
         }
-        return -1;
-    }
-
-    @Override
-    public int logIn(String phone, String passpword) {
         User findUser = userMapper.findUserByPhone(phone);
-        if(findUser!=null && findUser.getPassword().equals(passpword)){
-            return findUser.getUserId();
-        }
-        return -1;
+        return findUser.getUserId();
     }
 
     @Override
     public User findUserByUid(int id) {
-        return userMapper.findUserByUid(id);
+        User user =  userMapper.findUserByUid(id);
+        user.setPortrait("https://xinil.oss-cn-shanghai.aliyuncs.com/TTMS/"+user.getPortrait());
+        return user;
     }
 
     @Override
-    public boolean updateUserInform(int uid, String username, String portrait, String gender, Integer age, String introduce) {
-        User user = new User();
-        user.setUserId(uid);
-        user.setUsername(username);
-        user.setPortrait(portrait);
-        user.setGender(gender);
-        user.setAge(age);
-        user.setIntroduce(introduce);
+    public boolean updateUserInform(User user) {
         return 1 == userMapper.updateUserInform(user);
     }
+
     @Override
-    public boolean updateUserPwd(int uid, String password) {
+    public Boolean updatePortrait(int id, MultipartFile file) throws MyException {
+        String url = ossClientUtil.uploadImg2Oss(file);
         User user = new User();
-        user.setUserId(uid);
-        user.setPassword(password);
-        return 1 == userMapper.updateUserPwd(user);
+        user.setUserId(id);
+        user.setPortrait(url);
+        return 1 == userMapper.updateUserInform(user);
     }
 }

@@ -1,6 +1,8 @@
 package cn.xinill.ttms.service;
 
 import cn.xinill.ttms.po.User;
+import cn.xinill.ttms.utils.MyException;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface IUserService {
     /**
@@ -25,14 +27,6 @@ public interface IUserService {
     int logIn(String phone);
 
     /**
-     * 账号密码登陆，返回用户的 uid
-     * @param phone
-     * @param passpword
-     * @return
-     */
-    int logIn(String phone, String passpword);
-
-    /**
      * 根据 uid查找用户
      * @param id
      * @return
@@ -43,14 +37,13 @@ public interface IUserService {
      * 修改用户信息
      * @return
      */
-    boolean updateUserInform(int uid, String username, String portrait, String gender, Integer age, String introduce);
+    boolean updateUserInform(User user);
 
     /**
-     * 修改用户密码
-     * @param uid 根据 uid 确定用户。
-     * @param password
+     * 修改用户头像
+     * @param id
+     * @param file
      * @return
      */
-    boolean updateUserPwd(int uid, String password);
-
+    Boolean updatePortrait(int id, MultipartFile file) throws MyException;
 }

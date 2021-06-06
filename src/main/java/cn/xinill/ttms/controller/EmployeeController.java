@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
@@ -87,7 +88,7 @@ public class EmployeeController {
                 return ServerResponse.createByErrorMsgData("账号已被禁用", null);
             }
             logger.info("[员工登录]：登陆成功");
-            response.addHeader("token", tokenService.creatUserToken(employee.getEmpId(), rememberMe)); //响应头添加token
+            response.addHeader("token", tokenService.creatUserToken(employee.getEmpId(), employee.getRole(), rememberMe)); //响应头添加token
             return ServerResponse.createBySuccessMsgData("登陆成功", employee.getRole());
         } catch (Exception e) {
             logger.error("[员工登录]： /staff/login 接口异常");
@@ -134,35 +135,56 @@ public class EmployeeController {
     @RequestMapping(method = RequestMethod.POST, value = "/updaterole")
     public ServerResponse<Boolean> updateRole(@RequestBody Employee employee){
         try {
-            logger.info("[更改用户权限]：更新用户权限："+employee);
+            logger.info("[更改员工权限]：更新用户权限："+employee);
             if(employeeService.updateRole(employee)){
-                logger.info("[更改用户权限]：修改成功");
+                logger.info("[更改员工权限]：修改成功");
                 return ServerResponse.createBySuccessMsgData("修改成功", true);
             }else{
-                logger.warn("[更改用户权限]：修改失败");
+                logger.warn("[更改员工权限]：修改失败");
                 return ServerResponse.createByErrorMsgData("修改失败", false);
             }
         } catch (Exception e) {
-            logger.error("[更改用户权限]：/staff/updaterole 接口异常");
+            logger.error("[更改员工权限]：/staff/updaterole 接口异常");
             e.printStackTrace();
             return ServerResponse.createByErrorMsgData("服务器繁忙", false);
         }
     }
 
     @ResponseBody
-    @RequestMapping(method = RequestMethod.POST, value = "updatePwd")
-    public ServerResponse<Boolean> updatePwd(@RequestBody Employee employee){
+    @RequestMapping(method = RequestMethod.POST, value = "/updatePwd")
+    public ServerResponse<Boolean> updatePwd(@RequestBody Employee employee,
+                                             HttpServletRequest request){
         try{
-            logger.info("[更新用户密码]："+employee);
+            employee.setEmpId(Integer.valueOf(request.getHeader("id")));
+            logger.info("[更新员工密码]："+employee);
             if(employeeService.updatePwd(employee)){
-                logger.info("[更新用户密码]：修改成功");
+                logger.info("[更新员工密码]：修改成功");
                 return ServerResponse.createBySuccessMsgData("修改成功", true);
             }else{
-                logger.warn("[更新用户密码]：修改失败");
+                logger.warn("[更新员工密码]：修改失败");
                 return ServerResponse.createByErrorMsgData("修改失败", false);
             }
         }catch (Exception e){
-            logger.error("[更新用户密码]：/staff/updatePwd 接口异常");
+            logger.error("[更新员工密码]：/staff/updatePwd 接口异常");
+            e.printStackTrace();
+            return ServerResponse.createByErrorMsgData("服务器繁忙", false);
+        }
+    }
+
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.POST, value = "/resetPwd")
+    public ServerResponse<Boolean> resetPwd(@RequestBody VOIntegerId id){
+        try{
+            logger.info("[重置用户密码]：id = "+id.getId());
+            if(employeeService.resetPwd(id.getId())){
+                logger.info("[重置用户密码]：修改成功");
+                return ServerResponse.createBySuccessMsgData("重置成功", true);
+            }else{
+                logger.warn("[重置用户密码]：修改失败");
+                return ServerResponse.createByErrorMsgData("重置失败", false);
+            }
+        }catch (Exception e){
+            logger.error("[重置用户密码]：/staff/resetPwd 接口异常");
             e.printStackTrace();
             return ServerResponse.createByErrorMsgData("服务器繁忙", false);
         }

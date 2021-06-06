@@ -69,4 +69,9 @@ public class EmployeeServiceImpl implements IEmployeeService {
     public Boolean updatePwd(Employee employee) {
         return 1 == employeeMapper.updatePwd(employee);
     }
+
+    @Override
+    public Boolean resetPwd(int empId) {
+        return 1 == employeeMapper.resetPwd(empId);
+    }
 }

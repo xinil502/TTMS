@@ -11,9 +11,7 @@ public interface IUserMapper {
 
     User findUserByPhone(String phone);
 
-    User findUserByUid(int uid);
+    User findUserByUid(int userId);
 
     int updateUserInform(User user);
-
-    int updateUserPwd(User user);
 }

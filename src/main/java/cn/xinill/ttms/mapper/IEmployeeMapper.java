@@ -45,4 +45,9 @@ public interface IEmployeeMapper {
      * 修改用户密码
      */
     int updatePwd(Employee employee);
+
+    /**
+     * 重置密码
+     */
+    int resetPwd(int empId);
 }

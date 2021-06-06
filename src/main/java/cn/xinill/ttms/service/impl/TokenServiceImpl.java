@@ -26,10 +26,10 @@ public class TokenServiceImpl implements ITokenService {
     }
 
     @Override
-    public String creatUserToken(int userId, int seconds) {
-        String token = JWTTokenUtil.createToken(userId);
+    public String creatUserToken(int userId, int role, int seconds) {
+        String token = JWTTokenUtil.createToken(userId, role);
         token = token + System.currentTimeMillis() + (new Random().nextInt(899999)+100000);
-        if(redisUtil.set(token, userId, seconds)){
+        if(redisUtil.set(token, (userId+"@"+role), seconds)){
             return token;
         }else{
             return null;
@@ -37,7 +37,7 @@ public class TokenServiceImpl implements ITokenService {
     }
 
     @Override
-    public int verifyUserToken(String token) {
+    public int[] verifyUserToken(String token) {
         try {
 //            //token解密userId
 //            Map<String, Claim> map = JWTTokenUtil.verifyToken(token);
@@ -49,13 +49,15 @@ public class TokenServiceImpl implements ITokenService {
             //查找token，查看登陆是否过期。
             Object value = redisUtil.get(token);
             if(value != null){
-                return (Integer)value;
+                String[] split = ((String) value).split("@");
+                return new int[]{Integer.valueOf(split[0]),
+                        Integer.valueOf(split[1])};
             }else{
-                return -1;
+                return null;
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return -1;
+            return null;
         }
     }
 }

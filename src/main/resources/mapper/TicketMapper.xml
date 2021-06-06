@@ -5,8 +5,8 @@
 
 <mapper namespace="cn.xinill.ttms.mapper.ITicketMapper">   <!--namespace必须为接口的全类名-->
 
-    <!--开启缓存-->
-    <cache/>
+<!--    &lt;!&ndash;开启缓存&ndash;&gt;-->
+<!--    <cache/>-->
 
     <insert id="insertTicket" parameterType="_int">
         INSERT INTO ttms.ticket(user_id, schedule_id, seat_id)
@@ -23,6 +23,7 @@
         LEFT JOIN ttms.seat seat
         ON ticket.seat_id = seat.seat_id;
     </select>
+
     <select id="countTicketCanBuy" resultType="_int">
         SELECT count(*)
         FROM (SELECT *
@@ -32,6 +33,7 @@
         JOIN ttms.seat seat
         ON ticket.seat_id = seat.seat_id AND seat.seat_status = 1;
     </select>
+
     <update id="updateTicket">
         UPDATE ttms.ticket
         SET ticket_status = #{ticketStatus},
@@ -46,6 +48,15 @@
         WHERE ticket_id in ${ticketsId}
           AND ticket_status = 1;
     </update>
+
+    <select id="getPrice" parameterType="_int" resultType="_double">
+        SELECT schedule.ticketPrice
+        FROM(SELECT *
+            FROM ttms.ticket
+            WHERE ticket_id = #{ticketId}) ticket
+        LEFT JOIN ttms.schedule schedule
+        ON ticket.schedule_id = schedule.schedule_id
+    </select>
 
 
     <resultMap id="voticket" type="cn.xinill.ttms.vo.VOTicket">

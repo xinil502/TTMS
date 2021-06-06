@@ -71,9 +71,9 @@ spring:
         max-idle: 10
         # 连接池中的最小空闲连接
         min-idle: 0
-  jackson:
-    #返回的JSON数据中如果属性为NULL时，不序列化该键值对。(全服务设置，谨慎使用)  或者使用注解@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
-    default-property-inclusion: non_null
+#  jackson:
+#    #返回的JSON数据中如果属性为NULL时，不序列化该键值对。(全服务设置，谨慎使用)  或者使用注解@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+#    default-property-inclusion: non_null
 
 
 #配置mybatis
@@ -82,9 +82,9 @@ mybatis:
   type-aliases-package: cn.xinill.ttms.po
   #配置mapper.xml的映射  支持通配符
   mapper-locations: classpath:mapper/*Mapper.xml
-  configuration:
+#  configuration:
     #是否开启全局缓存。 默认为 true。如果配置 false， 优先级高于 xml文件中的<cache/>
-    cache-enabled: true
+#    cache-enabled: true
 
 #log4j2 日志配置
 logging:

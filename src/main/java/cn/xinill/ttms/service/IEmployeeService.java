@@ -59,4 +59,10 @@ public interface IEmployeeService {
      * @return
      */
     Boolean updatePwd(Employee employee);
+
+    /**
+     * 重置密码
+     */
+    Boolean resetPwd(int empId);
+
 }

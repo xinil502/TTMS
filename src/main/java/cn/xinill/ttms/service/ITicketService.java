@@ -21,7 +21,12 @@ public interface ITicketService {
     VOTicketList findTicketList(int scheduleId);
 
     /**
-     * 根据演出计划 id查找对应的演出票
+     * 手机号购票
      */
     Boolean saleTickets(VOSaleTicket saleTicket) throws MyException;
+
+    /**
+     * 用户id售票
+     */
+    Boolean saleTickets(VOSaleTicket saleTicket, int userId) throws MyException;
 }

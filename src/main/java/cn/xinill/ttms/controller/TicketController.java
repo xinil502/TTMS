@@ -12,10 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -37,11 +34,11 @@ public class TicketController {
     }
 
     @ResponseBody
-    @RequestMapping(method = RequestMethod.POST, value = "/getTicketsByScheduleId")
-    public ServerResponse<VOTicketList> getTicketList(@RequestBody Schedule schedule){
+    @RequestMapping(method = RequestMethod.GET, value = "/getTicketsByScheduleId")
+    public ServerResponse<VOTicketList> getTicketList(@RequestParam int scheduleId){
         try {
-            logger.info("[查询影票列表]： scheduleId = " + schedule.getScheduleId());
-            VOTicketList ticketList = ticketService.findTicketList(schedule.getScheduleId());
+            logger.info("[查询影票列表]： scheduleId = " + scheduleId);
+            VOTicketList ticketList = ticketService.findTicketList(scheduleId);
 
             StringBuilder sb = new StringBuilder("ticket: {");
             for(VOTicket ticket: ticketList.getTickets()){
@@ -62,9 +59,8 @@ public class TicketController {
     @RequestMapping(method = RequestMethod.POST, value = "/submitOrder")
     public ServerResponse<Boolean> submitTicket(@RequestBody VOSaleTicket tickets){
         try {
-            System.out.println(tickets);
-            if(tickets.getTickets().length == 0 || tickets.getTime() == null) throw new MyException("参数不合法");
-            logger.info("[售票员购票]： scheduleId = " + Arrays.toString(tickets.getTickets()) + tickets.getTime());
+            if(tickets.getTickets().length == 0 || tickets.getTime() == null || tickets.getPhone() == null || tickets.getPhone().length() != 11) throw new MyException("参数不合法");
+            logger.info("[售票员购票]： scheduleId = {phone=" +tickets.getPhone()+ Arrays.toString(tickets.getTickets()) + tickets.getTime());
             ticketService.saleTickets(tickets);
             logger.info("[售票员购票]：成功购买影票");
             return ServerResponse.createBySuccessMsgData("成功购买影票", true);

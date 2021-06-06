@@ -12,4 +12,5 @@ import java.io.Serializable;
 public class VOSaleTicket implements Serializable {
     private Integer[] tickets;
     private Long time;
+    private String phone;
 }

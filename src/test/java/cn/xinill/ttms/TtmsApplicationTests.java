@@ -12,9 +12,6 @@ class TtmsApplicationTests {
     TokenServiceImpl tokenService;
     @Test
     void contextLoads() {
-        String token = tokenService.creatUserToken(1,1000);
-        System.out.println(token);
-        System.out.println(tokenService.verifyUserToken(token));
     }
 
 }

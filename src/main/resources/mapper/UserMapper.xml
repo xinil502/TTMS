@@ -17,48 +17,49 @@
         INSERT INTO ttms.user(phone) VALUES(#{phone});
     </insert>
 
-<!--    <select id="findUserByUid" parameterType="_int" resultMap="user">-->
-<!--        SELECT * FROM photoapp.user WHERE uid = #{uid};-->
-<!--    </select>-->
+    <select id="findUserByUid" parameterType="_int" resultMap="user">
+        SELECT * FROM ttms.user WHERE user_id = #{userId};
+    </select>
 
-<!--    <update id="updateUserInform" parameterType="user">-->
-<!--        UPDATE photoapp.user-->
-<!--        <set>-->
-<!--            <if test="username != null">-->
-<!--                username = #{username},-->
-<!--            </if>-->
-<!--            <if test="portrait != null">-->
-<!--                portrait = #{portrait},-->
-<!--            </if>-->
-<!--            <if test="gender != null">-->
-<!--                gender = #{gender},-->
-<!--            </if>-->
-<!--            <if test="birth != null">-->
-<!--                birth = #{birth},-->
-<!--            </if>-->
-<!--            <if test="age != null">-->
-<!--                age = #{age},-->
-<!--            </if>-->
-<!--            <if test="introduce != null">-->
-<!--                introduce = #{introduce}-->
-<!--            </if>-->
-<!--        </set>-->
-<!--        WHERE uid = #{uid};-->
-<!--    </update>-->
-
-<!--    <update id="updateUserPwd" parameterType="user">-->
-<!--        UPDATE photoapp.user SET pwd = #{password} WHERE uid = #{uid};-->
-<!--    </update>-->
+    <update id="updateUserInform" parameterType="user">
+        UPDATE ttms.user
+        <set>
+            <if test="username != null">
+                username = #{username},
+            </if>
+            <if test="portrait != null">
+                portrait = #{portrait},
+            </if>
+            <if test="gender != null">
+                gender = #{gender},
+            </if>
+            <if test="age != null">
+                age = #{age},
+            </if>
+            <if test="email != null">
+                email = #{email},
+            </if>
+            <if test="introduce != null">
+                introduce = #{introduce}
+            </if>
+            <if test="balance != null">
+                balance = #{balance}
+            </if>
+        </set>
+        WHERE user_id = #{userId};
+    </update>
 
     <resultMap id="user" type="cn.xinill.ttms.po.User">
         <id property="userId" column="user_id"/>
-        <result property="username" column="username"/>
         <result property="phone" column="phone"/>
+        <result property="username" column="username"/>
         <result property="password" column="password"/>
+        <result property="portrait" column="portrait"/>
         <result property="age" column="age"/>
         <result property="gender" column="gender"/>
         <result property="email" column="email"/>
         <result property="introduce" column="introduce"/>
+        <result property="balance" column="balance"/>
     </resultMap>
 </mapper>
 

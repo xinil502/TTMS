@@ -24,7 +24,7 @@ public class JWTTokenUtil {
      * @param userId
      * @return
      */
-    public static String createToken(int userId){
+    public static String createToken(int userId, int role){
         String token;
         try {
             //过期时间
@@ -41,7 +41,8 @@ public class JWTTokenUtil {
                     .withIssuer("auth0")
                     //添加头部信息
                     .withHeader(header)
-                    .withClaim("userId",userId)
+                    .withClaim("id",userId)
+                    .withClaim("Role", role)
                     //设置过期时间
                     .withExpiresAt(date)
                     //秘钥及加密算法

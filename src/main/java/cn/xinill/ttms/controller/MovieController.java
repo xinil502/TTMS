@@ -49,7 +49,7 @@ public class MovieController {
         } catch (MyException e) {
             logger.error("[上传图片]：/movie/upload-cover 接口异常");
             e.printStackTrace();
-            return ServerResponse.createByErrorMsg("服务器异常");
+            return ServerResponse.createByErrorMsgData("服务器异常", null);
         }
     }
 
