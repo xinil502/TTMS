@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.xinill.ttms.mapper.IOrderMapper">
+
+    <!--    &lt;!&ndash;开启缓存&ndash;&gt;-->
+    <!--    <cache/>-->
+
+    <insert id="addOrder" parameterType="order">
+        INSERT INTO ttms.order(order_id, user_id, schedule_id, order_pay_time, order_price, order_exist_time)
+        VALUES (#{orderId}, #{userId}, #{scheduleId}, #{payTime}, #{price}, #{orderExistTime});
+    </insert>
+
+    
+    <select id="selectOrderByUserId" parameterType="_int" resultMap="voorder">
+        SELECT o.order_id order_id,
+               o.order_pay_time pay_time,
+               o.order_price price,
+               o.order_status status,
+               o.order_exist_time order_exist_time,
+               schedule.schedule_start_time start,
+               schedule.schedule_end_time end,
+               movie.title movie_name,
+               studio.studio_name studio_name
+        FROM(SELECT *
+            FROM ttms.order
+            WHERE user_id = #{userId}) o
+        LEFT JOIN ttms.schedule schedule
+        ON o.schedule_id = schedule.schedule_id
+        LEFT JOIN ttms.movie movie
+        ON schedule.movie_id = movie.mid
+        LEFT JOIN ttms.studio studio
+        ON schedule.studio_id = studio.studio_id
+        ORDER BY pay_time DESC;
+    </select>
+
+    <select id="selectUserIdByOrderId" parameterType="_long" resultMap="order">
+        SELECT *
+        FROM ttms.order
+        WHERE order_id = #{orderId}
+    </select>
+
+    <update id="updateStatus" parameterType="order">
+        UPDATE ttms.order
+        SET order_status = #{status}
+        WHERE order_id = #{orderId}
+    </update>
+    
+    <resultMap id="voorder" type="cn.xinill.ttms.vo.VOOrder">
+        <id property="orderId" column="order_id"/>
+        <result property="payTime" column="pay_time"/>
+        <result property="price" column="price"/>
+        <result property="movieName" column="movie_name"/>
+        <result property="studioName" column="studio_name"/>
+        <result property="startTime" column="start"/>
+        <result property="endTime" column="end"/>
+        <result property="orderStatus" column="status"/>
+        <result property="OrderExistTime" column="order_exist_time"/>
+    </resultMap>
+
+    <resultMap id="order" type="cn.xinill.ttms.po.Order">
+        <id property="orderId" column="order_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="scheduleId" column="schedule_id"/>
+        <result property="payTime" column="order_pay_time"/>
+        <result property="price" column="order_price"/>
+        <result property="status" column="order_status"/>
+        <result property="OrderExistTime" column="order_exist_time"/>
+    </resultMap>
+</mapper>

@@ -44,7 +44,7 @@
 
     <update id="updatePwd" parameterType="employee">
         UPDATE ttms.employee
-        SET emp_pwd = #{passowrd}
+        SET emp_pwd = #{password}
         WHERE emp_id = #{empId}
     </update>
 

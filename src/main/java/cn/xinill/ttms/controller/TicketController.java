@@ -1,10 +1,9 @@
 package cn.xinill.ttms.controller;
 
 import cn.xinill.ttms.common.ServerResponse;
-import cn.xinill.ttms.po.Schedule;
 import cn.xinill.ttms.service.ITicketService;
 import cn.xinill.ttms.utils.MyException;
-import cn.xinill.ttms.vo.VOSaleTicket;
+import cn.xinill.ttms.vo.VOTicketOrder;
 import cn.xinill.ttms.vo.VOTicket;
 
 import cn.xinill.ttms.vo.VOTicketList;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * @Author: Xinil
@@ -38,7 +36,7 @@ public class TicketController {
     public ServerResponse<VOTicketList> getTicketList(@RequestParam int scheduleId){
         try {
             logger.info("[查询影票列表]： scheduleId = " + scheduleId);
-            VOTicketList ticketList = ticketService.findTicketList(scheduleId);
+            VOTicketList ticketList = ticketService.findTicketListByScheduleId(scheduleId);
 
             StringBuilder sb = new StringBuilder("ticket: {");
             for(VOTicket ticket: ticketList.getTickets()){
@@ -57,10 +55,10 @@ public class TicketController {
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.POST, value = "/submitOrder")
-    public ServerResponse<Boolean> submitTicket(@RequestBody VOSaleTicket tickets){
+    public ServerResponse<Boolean> submitTicket(@RequestBody VOTicketOrder tickets){
         try {
-            if(tickets.getTickets().length == 0 || tickets.getTime() == null || tickets.getPhone() == null || tickets.getPhone().length() != 11) throw new MyException("参数不合法");
-            logger.info("[售票员购票]： scheduleId = {phone=" +tickets.getPhone()+ Arrays.toString(tickets.getTickets()) + tickets.getTime());
+            if(tickets.getTickets().length == 0 || tickets.getScheduleId() == null || tickets.getPhone() == null || tickets.getPhone().length() != 11) throw new MyException("参数不合法");
+            logger.info("[售票员购票]： scheduleId = {phone=" +tickets.getPhone()+"  scheduleId = "+ tickets.getScheduleId()+ "tickets = " + Arrays.toString(tickets.getTickets()) );
             ticketService.saleTickets(tickets);
             logger.info("[售票员购票]：成功购买影票");
             return ServerResponse.createBySuccessMsgData("成功购买影票", true);

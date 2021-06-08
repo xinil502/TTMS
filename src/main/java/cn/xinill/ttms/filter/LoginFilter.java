@@ -30,7 +30,9 @@ public class LoginFilter implements Filter {
             String servletPath = ((HttpServletRequest) request).getServletPath();
             logger.info("___________________"+((HttpServletRequest) request).getMethod() + ":"+servletPath+"________________");
             //登陆放行
-            if(((HttpServletRequest) request).getMethod().equals("OPTIONS") || servletPath.startsWith("/user/login") || servletPath.startsWith("/staff/login")){
+            if(((HttpServletRequest) request).getMethod().equals("OPTIONS")
+                    || servletPath.startsWith("/user/login")
+                    || servletPath.startsWith("/staff/login")){
                 filterChain.doFilter(request,response);
                 return;
             }
@@ -44,19 +46,20 @@ public class LoginFilter implements Filter {
                     throw new MyException("token已经过期，需要登陆");
                 }else {
                     logger.info("______________token已解析 id = " + verifyToken[0] +"  role = " + verifyToken[1]+"_______________");
-                    if(((HttpServletRequest) request).getMethod().equals("GET") && servletPath.startsWith("/movie")
-                        || ((HttpServletRequest) request).getMethod().equals("GET") && servletPath.startsWith("/schedule")
-                        || ((HttpServletRequest) request).getMethod().equals("GET") && servletPath.startsWith("/ticket")){
+                    if(verifyToken[0] == 1
+                            ||((HttpServletRequest) request).getMethod().equals("GET") && servletPath.startsWith("/movie")
+                            || ((HttpServletRequest) request).getMethod().equals("GET") && servletPath.startsWith("/schedule")
+                            || ((HttpServletRequest) request).getMethod().equals("GET") && servletPath.startsWith("/ticket")){
 
+                    }else if(verifyToken[1] != 6 && servletPath.startsWith("/staff/updatePwd")){
                     }else if(verifyToken[1] == 6 && (servletPath.startsWith("/user"))){
-                    }else if(verifyToken[1] == 1 && (servletPath.startsWith("/ticket"))){
+                    }else if(verifyToken[1] == 1 && (servletPath.startsWith("/ticket")
+                                                    || servletPath.startsWith("/order"))){
                     }else if(verifyToken[1] == 2 && (false)){
                     }else if(verifyToken[1] == 3 && (servletPath.startsWith("/staff")
                                                     || servletPath.startsWith("/movie")
                                                     || servletPath.startsWith("/studio")
                                                     || servletPath.startsWith("/schedule"))){
-                    }else if(verifyToken[1] != 6 && servletPath.startsWith("/staff/updatePwd")){
-
                     }else{
                         throw new MyException("权限不足，不允许访问");
                     }

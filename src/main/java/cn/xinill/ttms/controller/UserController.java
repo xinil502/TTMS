@@ -1,17 +1,15 @@
 package cn.xinill.ttms.controller;
 
 import cn.xinill.ttms.common.ServerResponse;
+import cn.xinill.ttms.po.Order;
 import cn.xinill.ttms.po.User;
-import cn.xinill.ttms.service.ITicketService;
+import cn.xinill.ttms.service.*;
 import cn.xinill.ttms.vo.VOLogin;
-import cn.xinill.ttms.service.ICodeService;
-import cn.xinill.ttms.service.ITokenService;
-import cn.xinill.ttms.service.IUserService;
-import cn.xinill.ttms.service.impl.TokenServiceImpl;
 import cn.xinill.ttms.utils.MyException;
 import cn.xinill.ttms.utils.OSSClientUtil;
 
-import cn.xinill.ttms.vo.VOSaleTicket;
+import cn.xinill.ttms.vo.VOOrder;
+import cn.xinill.ttms.vo.VOTicketOrder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +21,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
+import java.util.List;
 
 @Controller
 @RequestMapping(value = "/user", produces="application/json;charset=UTF-8")
@@ -30,11 +29,11 @@ public class UserController {
 
     private final int rememberMe = 7*24*60*60;
     private Logger logger = LogManager.getLogger(LogManager.ROOT_LOGGER_NAME);
-    private OSSClientUtil ossClientUtil = new OSSClientUtil();
     private IUserService userService;
     private ITokenService tokenService;
     private ICodeService codeService;
     private ITicketService ticketService;
+    private IOrderService orderService;
 
     @Autowired
     public void setUserService(IUserService userService) {
@@ -56,8 +55,13 @@ public class UserController {
         this.ticketService = ticketService;
     }
 
+    @Autowired
+    public void setOrderService(IOrderService orderService) {
+        this.orderService = orderService;
+    }
+
     /**
-     * 用户登陆-发送验证码
+     * 用于测试 token是否过期
      */
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, value = "/test")
@@ -161,7 +165,7 @@ public class UserController {
 
 
     /**
-     * 修改用户信息
+     * 修改用户头像
      */
     @ResponseBody
     @RequestMapping(method = RequestMethod.POST, value = "/inform/updatePortrait")
@@ -171,10 +175,11 @@ public class UserController {
             logger.info("[用户上传头像]");
             int id = (Integer) request.getAttribute("id");
             if(userService.updatePortrait(id, file)){
-                throw new MyException("用户不存在");
+                logger.info("[用户上传头像]：上传成功");
+                return ServerResponse.createBySuccessMsgData("上传头像成功", true);
+            }else{
+                throw new MyException("头像上传失败");
             }
-            logger.info("[用户上传头像]：上传成功");
-            return ServerResponse.createBySuccessMsgData("上传头像成功", true);
         } catch (MyException e) {
             logger.error(e.getMessage());
             return ServerResponse.createByErrorMsgData(e.getMessage(), false);
@@ -210,18 +215,19 @@ public class UserController {
             return ServerResponse.createByErrorMsgData("服务器异常", false);
         }
     }
+
     /**
      * 用户购票
      */
     @ResponseBody
     @RequestMapping(method = RequestMethod.POST, value = "/buyTickets")
     public ServerResponse<Boolean> updateInform(ServletRequest request,
-                                                @RequestBody VOSaleTicket saleTicket) {
+                                                @RequestBody VOTicketOrder saleTicket) {
         try{
             int id = (Integer)request.getAttribute("id");
 
-            if(saleTicket.getTickets().length == 0 || saleTicket.getTime() == null) throw new MyException("参数不合法");
-            logger.info("[用户购票]： scheduleId = {userId = " +id+ Arrays.toString(saleTicket.getTickets()) + saleTicket.getTime());
+            if(saleTicket.getTickets().length == 0 || saleTicket.getScheduleId() == null) throw new MyException("参数不合法");
+            logger.info("[用户购票]： scheduleId = {userId = " +id+"  scheduleId = "+ saleTicket.getScheduleId()+ "tickets = " + Arrays.toString(saleTicket.getTickets()) );
             ticketService.saleTickets(saleTicket, id);
             logger.info("[用户购票]：成功购买影票");
             return ServerResponse.createBySuccessMsgData("成功购买影票", true);
@@ -234,4 +240,66 @@ public class UserController {
             return ServerResponse.createByErrorMsgData("服务器异常", false);
         }
     }
+
+    /**
+     * 用户查看所有订单
+     */
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.GET, value = "/getOrder")
+    public ServerResponse<List<VOOrder>> getOrder(ServletRequest request) {
+        try{
+            int id = (Integer)request.getAttribute("id");
+            logger.info("[用户查询订单]： 正在查询中");
+            List<VOOrder> orderList = orderService.getOrderList(id);
+            logger.info("[用户查询订单]：成功查询订单");
+            return ServerResponse.createBySuccessMsgData("成功查询订单", orderList);
+        }catch (Exception e){
+            logger.error("[用户查询订单]：/user/getOrder 接口异常");
+            e.printStackTrace();
+            return ServerResponse.createByErrorMsgData("服务器异常", null);
+        }
+    }
+
+    /**
+     * 用户退款订单
+     */
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.POST, value = "/reverseOrder")
+    public ServerResponse<Boolean> reverseOrder(@RequestBody Order order) {
+        try{
+            if(orderService.reverseOrder(order.getOrderId())){
+                logger.info("[用户自助退票]：退票成功");
+                return ServerResponse.createBySuccessMsgData("退票成功", true);
+            }
+            logger.info("[用户自助退票]: 退票失败");
+            return ServerResponse.createBySuccessMsgData("退票失败", false);
+        }catch (Exception e){
+            logger.error("[用户自助退票]：/user/reverseOrder 接口异常");
+            e.printStackTrace();
+            return ServerResponse.createByErrorMsgData("服务器异常", false);
+        }
+    }
+
+    /**
+     * 用户自助充值
+     */
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.POST, value = "/addBalance")
+    public ServerResponse<Boolean> addBalance(@RequestBody User user,
+                                              HttpServletRequest request) {
+        try{
+            if(userService.updateUserMoney((Integer)request.getAttribute("id"), user.getBalance())){
+                logger.info("[用户自助充值]：充值成功");
+                return ServerResponse.createBySuccessMsgData("充值成功", true);
+            }
+            logger.info("[用户自助充值]: 充值失败");
+            return ServerResponse.createBySuccessMsgData("充值失败", false);
+        }catch (Exception e){
+            logger.error("[用户自助充值]：/user/addBalance 接口异常");
+            e.printStackTrace();
+            return ServerResponse.createByErrorMsgData("服务器异常", false);
+        }
+    }
+
+
 }

@@ -34,15 +34,41 @@ public interface ITicketMapper {
     int countTicketCanBuy(String ticketsId);
 
     /**
-     * 修改影票状态
-     * @param ticketsId
-     * @param time
+     * 买影票状态
      * @param ticketStatus 0未出售 1线上支付 2线下支付
-     * @param userId 用户购买时传递用户id，其他情况下默认-1
+     * @param ticketsId
      * @return
      */
-    int updateTicket(String ticketsId, long time, int ticketStatus, Integer userId);
+    int buyTicket(int ticketStatus, String ticketsId);
 
 
+    /**
+     * 添加 OrderTicket记录
+     * @param orderId
+     * @param ticketId
+     * @return
+     */
+    int addOrderTicket(long orderId, int ticketId);
+
+
+    /**
+     * 根据票获取票的价格
+     * @param ticketId
+     * @return
+     */
     double getPrice(int ticketId);
+
+    /**
+     * 根据演出计划 id 查找所有该演出计划的影票
+     * @param orderId
+     * @return
+     */
+    List<VOTicket> findTicketByOrderId(long orderId);
+
+    /**
+     * 退电影票
+     * @param orderId
+     * @return
+     */
+    int reverseTicket(long orderId);
 }

@@ -46,4 +46,13 @@ public interface IUserService {
      * @return
      */
     Boolean updatePortrait(int id, MultipartFile file) throws MyException;
+
+    /**
+     * 用户金额变动
+     * @param userId
+     * @param change
+     * @return
+     * @throws MyException
+     */
+    boolean updateUserMoney(int userId, double change) throws MyException;
 }

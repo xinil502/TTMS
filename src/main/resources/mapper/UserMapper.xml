@@ -5,8 +5,8 @@
 
 <mapper namespace="cn.xinill.ttms.mapper.IUserMapper">   <!--namespace必须为接口的全类名-->
 
-    <!--开启缓存-->
-    <cache/>
+<!--    &lt;!&ndash;开启缓存&ndash;&gt;-->
+<!--    <cache/>-->
 
     <select id="findUserByPhone" parameterType="string" resultMap="user">
         SELECT * FROM ttms.user WHERE phone = #{phone};
@@ -40,7 +40,7 @@
                 email = #{email},
             </if>
             <if test="introduce != null">
-                introduce = #{introduce}
+                introduce = #{introduce},
             </if>
             <if test="balance != null">
                 balance = #{balance}

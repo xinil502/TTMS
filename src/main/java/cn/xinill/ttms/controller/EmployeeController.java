@@ -155,7 +155,7 @@ public class EmployeeController {
     public ServerResponse<Boolean> updatePwd(@RequestBody Employee employee,
                                              HttpServletRequest request){
         try{
-            employee.setEmpId(Integer.valueOf(request.getHeader("id")));
+            employee.setEmpId((Integer)request.getAttribute("id"));
             logger.info("[更新员工密码]："+employee);
             if(employeeService.updatePwd(employee)){
                 logger.info("[更新员工密码]：修改成功");

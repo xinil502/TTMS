@@ -15,5 +15,4 @@ public class Ticket implements Serializable {
     private Integer schedule_id;
     private Integer seat_id;
     private Integer ticket_type;
-    private Long ticket_time;
 }

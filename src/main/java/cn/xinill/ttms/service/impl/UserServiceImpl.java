@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class UserServiceImpl implements IUserService {
-
+    private static final Object LOCK = new Object();
     private IUserMapper userMapper;
     private OSSClientUtil ossClientUtil;
 
@@ -71,10 +71,27 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public Boolean updatePortrait(int id, MultipartFile file) throws MyException {
-        String url = ossClientUtil.uploadImg2Oss(file);
+        String fileName = ossClientUtil.uploadImg2Oss(file);
         User user = new User();
         user.setUserId(id);
-        user.setPortrait(url);
+        user.setPortrait(fileName);
         return 1 == userMapper.updateUserInform(user);
+    }
+
+
+    @Override
+    public boolean updateUserMoney(int userId, double change) throws MyException {
+        synchronized (UserServiceImpl.LOCK){
+            //收款
+            User user = findUserByUid(userId);
+            if(user.getBalance() + change < 0){
+                throw new MyException("余额不足，请前往前台充值");
+            }else{
+                user.setBalance(user.getBalance() + change);
+                user.setPortrait(null);
+                updateUserInform(user);
+                return true;
+            }
+        }
     }
 }

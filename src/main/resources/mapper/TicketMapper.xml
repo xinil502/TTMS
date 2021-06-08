@@ -9,8 +9,8 @@
 <!--    <cache/>-->
 
     <insert id="insertTicket" parameterType="_int">
-        INSERT INTO ttms.ticket(user_id, schedule_id, seat_id)
-        VALUES('-1', #{scheduleId}, #{seatId});
+        INSERT INTO ttms.ticket(schedule_id, seat_id)
+        VALUES(#{scheduleId}, #{seatId});
     </insert>
 
     <select id="findTicketByScheduleId" parameterType="_int" resultMap="voticket">
@@ -34,17 +34,15 @@
         ON ticket.seat_id = seat.seat_id AND seat.seat_status = 1;
     </select>
 
-    <update id="updateTicket">
+    <insert id="addOrderTicket" >
+        INSERT INTO ttms.order_ticket
+        SET order_id = #{orderId},
+            ticket_id = #{ticketId}
+    </insert>
+
+    <update id="buyTicket">
         UPDATE ttms.ticket
-        SET ticket_status = #{ticketStatus},
-            ticket_time = #{time},
-            user_id =
-            <if test="userId == null">
-                '-1'
-            </if>
-            <if test="userId != null">
-                #{userId}
-            </if>
+        SET ticket_status = #{ticketStatus}
         WHERE ticket_id in ${ticketsId}
           AND ticket_status = 1;
     </update>
@@ -55,9 +53,30 @@
             FROM ttms.ticket
             WHERE ticket_id = #{ticketId}) ticket
         LEFT JOIN ttms.schedule schedule
-        ON ticket.schedule_id = schedule.schedule_id
+            ON ticket.schedule_id = schedule.schedule_id
     </select>
 
+    <select id="findTicketByOrderId" parameterType="_long" resultMap="voticket">
+        SELECT t.ticket_id ticket_id,
+               t.ticket_status ticket_status,
+               s.seat_row seat_row,
+               s.seat_col seat_col,
+               s.seat_status seat_status
+        FROM (SELECT * FROM ttms.order_ticket WHERE order_id = #{orderId}) ot
+        LEFT JOIN ttms.ticket t
+            ON ot.ticket_id = t.ticket_id
+        LEFT JOIN ttms.seat s
+            ON t.seat_id = s.seat_id;
+    </select>
+
+    <update id="reverseTicket">
+        UPDATE ttms.ticket
+        SET ticket_status = 1
+        WHERE ticket_id
+                  IN (SELECT ticket_id
+                  FROM ttms.order_ticket
+                  WHERE order_id = #{orderId})
+    </update>
 
     <resultMap id="voticket" type="cn.xinill.ttms.vo.VOTicket">
         <id property="ticketId" column="ticket_id"/>

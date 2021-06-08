@@ -10,7 +10,7 @@
     </parent>
     <groupId>cn.xinill</groupId>
     <artifactId>ttms</artifactId>
-    <version>0.1.1-develop</version>
+    <version>0.1.7-develop</version>
     <name>TTMS</name>
     <description>TTMS project for Spring Boot</description>
 

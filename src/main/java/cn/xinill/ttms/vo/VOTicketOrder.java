@@ -9,8 +9,8 @@ import java.io.Serializable;
  * @Date: 2021/6/5 17:38
  */
 @Data
-public class VOSaleTicket implements Serializable {
+public class VOTicketOrder implements Serializable {
     private Integer[] tickets;
-    private Long time;
+    private Integer scheduleId;
     private String phone;
 }

@@ -1,17 +1,16 @@
 package cn.xinill.ttms.service.impl;
 
 import cn.xinill.ttms.mapper.ITicketMapper;
+import cn.xinill.ttms.po.Order;
 import cn.xinill.ttms.po.Schedule;
 import cn.xinill.ttms.po.Studio;
 import cn.xinill.ttms.po.User;
-import cn.xinill.ttms.service.IScheduleService;
-import cn.xinill.ttms.service.IStudioService;
-import cn.xinill.ttms.service.ITicketService;
-import cn.xinill.ttms.service.IUserService;
+import cn.xinill.ttms.service.*;
 import cn.xinill.ttms.utils.MyException;
-import cn.xinill.ttms.vo.VOSaleTicket;
+import cn.xinill.ttms.vo.VOTicketOrder;
 import cn.xinill.ttms.vo.VOTicket;
 import cn.xinill.ttms.vo.VOTicketList;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,12 +24,12 @@ import java.util.List;
 @Service
 @Transactional
 public class TicketServiceImpl implements ITicketService {
-    static final Object object = new Object();
+    private static final Object LOCK = new Object();
     private ITicketMapper ticketMapper;
     private IScheduleService scheduleService;
     private IStudioService studioService;
     private IUserService userService;
-
+    private IOrderService orderService;
 
     @Autowired(required = false)
     public void setTicketMapper(ITicketMapper ticketMapper) {
@@ -52,13 +51,19 @@ public class TicketServiceImpl implements ITicketService {
         this.userService = userService;
     }
 
+    @Autowired
+    public void setOrderService(IOrderService orderService) {
+        this.orderService = orderService;
+    }
+
+
     @Override
     public boolean createTicket(int scheduleId, int seatId) {
         return 1 == ticketMapper.insertTicket(scheduleId, seatId);
     }
 
     @Override
-    public VOTicketList findTicketList(int scheduleId){
+    public VOTicketList findTicketListByScheduleId(int scheduleId){
         VOTicketList voTicketList = new VOTicketList();
 
         Schedule schedule = scheduleService.findScheduleById(scheduleId);
@@ -77,16 +82,33 @@ public class TicketServiceImpl implements ITicketService {
     }
 
     @Override
-    public Boolean saleTickets(VOSaleTicket saleTicket) throws MyException{
+    public Boolean saleTickets(VOTicketOrder saleTicket) throws MyException{
         //根据手机号获取用户 id
         int userId = userService.logIn(saleTicket.getPhone());
         //处理购票列表
-        String ticket = ticketsToString(saleTicket.getTickets());
+        Integer[] tickets = saleTicket.getTickets();
+        String ticket = ticketsToString(tickets);
+        double change = tickets.length * ticketMapper.getPrice(tickets[0]);
+        //设置订单有效时间
+        long scheduleStartTime = scheduleService.findScheduleById(saleTicket.getScheduleId()).getStartTime();
 
         //购票
-        synchronized (object){
+        synchronized (TicketServiceImpl.LOCK){
             if(saleTicket.getTickets().length == ticketMapper.countTicketCanBuy(ticket)){
-                ticketMapper.updateTicket(ticket, saleTicket.getTime(), 3, userId);
+                //生成订单
+                Order order = new Order();
+                order.setUserId(userId);
+                order.setScheduleId(saleTicket.getScheduleId());
+                order.setPayTime(System.currentTimeMillis());
+                order.setPrice(change);
+                order.setOrderExistTime(scheduleStartTime-15*60*1000);
+                long orderId = orderService.addOrder(order);
+                //购票
+                ticketMapper.buyTicket(2, ticket);
+                //添加order——ticket
+                for(Integer t: tickets){
+                    addOrderTicket(orderId, t);
+                }
                 return true;
             }else{
                 throw new MyException("该票已被出售");
@@ -95,32 +117,56 @@ public class TicketServiceImpl implements ITicketService {
     }
 
 
+
     @Override
-    public Boolean saleTickets(VOSaleTicket saleTicket, int userId) throws MyException{
+    public Boolean saleTickets(VOTicketOrder saleTicket, int userId) throws MyException{
         //处理购票列表
         Integer[] tickets = saleTicket.getTickets();
         String ticket = ticketsToString(tickets);
-
         double change = tickets.length * ticketMapper.getPrice(tickets[0]);
+        //设置订单有效时间
+        long scheduleStartTime = scheduleService.findScheduleById(saleTicket.getScheduleId()).getStartTime();
 
         //悲观锁
-        synchronized (object){
-            //收款
-            User user = userService.findUserByUid(userId);
-            if(user.getBalance() < change){
-                throw new MyException("余额不足，请前往前台充值");
-            }else{
-                user.setBalance(user.getBalance()-change);
-            }
-            //购票
+        synchronized (TicketServiceImpl.LOCK){
+            //座位有效，可以购票
             if(tickets.length == ticketMapper.countTicketCanBuy(ticket)){
-                ticketMapper.updateTicket(ticket, saleTicket.getTime(), 3, userId);
-                userService.updateUserInform(user);
+                //收款
+                userService.updateUserMoney(userId, -change);
+                //创建生成订单
+                Order order = new Order();
+                order.setUserId(userId);
+                order.setScheduleId(saleTicket.getScheduleId());
+                order.setPayTime(System.currentTimeMillis());
+                order.setPrice(change);
+                order.setOrderExistTime(scheduleStartTime-15*60*1000);
+                long orderId = orderService.addOrder(order);
+                //购票
+                ticketMapper.buyTicket(3, ticket);
+                //添加order——ticket
+                for(Integer t: tickets){
+                    addOrderTicket(orderId, t);
+                }
                 return true;
             }else{
                 throw new MyException("该票已被出售");
             }
         }
+    }
+
+    public Boolean addOrderTicket(long orderId, int ticketId){
+        return 1 == ticketMapper.addOrderTicket(orderId, ticketId);
+    }
+
+    @Override
+    public List<VOTicket> findTicketListByOrderId(long orderId){
+        return ticketMapper.findTicketByOrderId(orderId);
+    }
+
+    @Override
+    public Boolean reverseTicket(long orderId){
+    	ticketMapper.reverseTicket(orderId);
+    	return true;
     }
 
     String ticketsToString(Integer[] tickets){
@@ -133,4 +179,5 @@ public class TicketServiceImpl implements ITicketService {
         sb.append(')');
         return sb.toString();
     }
+
 }

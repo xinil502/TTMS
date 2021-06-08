@@ -1,8 +1,11 @@
 package cn.xinill.ttms.service;
 
 import cn.xinill.ttms.utils.MyException;
-import cn.xinill.ttms.vo.VOSaleTicket;
+import cn.xinill.ttms.vo.VOTicket;
+import cn.xinill.ttms.vo.VOTicketOrder;
 import cn.xinill.ttms.vo.VOTicketList;
+
+import java.util.List;
 
 
 /**
@@ -18,15 +21,27 @@ public interface ITicketService {
     /**
      * 根据演出计划 id查找对应的演出票
      */
-    VOTicketList findTicketList(int scheduleId);
+    VOTicketList findTicketListByScheduleId(int scheduleId);
 
     /**
      * 手机号购票
      */
-    Boolean saleTickets(VOSaleTicket saleTicket) throws MyException;
+    Boolean saleTickets(VOTicketOrder saleTicket) throws MyException;
 
     /**
      * 用户id售票
      */
-    Boolean saleTickets(VOSaleTicket saleTicket, int userId) throws MyException;
+    Boolean saleTickets(VOTicketOrder saleTicket, int userId) throws MyException;
+
+
+    Boolean addOrderTicket(long orderId, int ticketId);
+    /**
+     * 根据订单 id查询电影票
+     */
+    List<VOTicket> findTicketListByOrderId(long orderId);
+
+    /**
+     * 退票
+     */
+    Boolean reverseTicket(long orderId);
 }
