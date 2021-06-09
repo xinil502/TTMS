@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.xinill.ttms.mapper.IStatisticsMapper">   <!--namespace必须为接口的全类名-->
+
+    <select id="selectAllBoxOffice" resultMap="voboxoffice">
+        SELECT m.title movieName,
+               SUM(ot.order_price) boxOffice
+        FROM (SELECT ot.order_id order_id,
+                     o.order_price,
+                     MAX(ticket_id) ticket_id
+            FROM ttms.order_ticket ot
+            LEFT JOIN ttms.order o
+            ON o.order_id = ot.order_id
+            WHERE order_status = 1
+            GROUP BY ot.order_id) ot
+        LEFT JOIN ttms.ticket t
+            ON ot.ticket_id = t.ticket_id
+        LEFT JOIN ttms.schedule schedule
+            ON t.schedule_id = schedule.schedule_id
+        LEFT JOIN ttms.movie m
+            ON schedule.movie_id = m.mid
+        GROUP BY m.mid
+        ORDER BY boxOffice
+        <if test="sortRule=='down'">
+            DESC
+        </if>
+        LIMIT #{start}, #{len};
+    </select>
+
+    <select id="selectBoxOfficeByTime" resultMap="voboxoffice">
+        SELECT m.title movieName,
+               SUM(ot.order_price) boxOffice
+        FROM (SELECT ot.order_id order_id,
+                     o.order_price,
+                     o.order_pay_time order_pay_time,
+                     MAX(ticket_id) ticket_id
+            FROM ttms.order_ticket ot
+            LEFT JOIN ttms.order o
+                ON o.order_id = ot.order_id
+            WHERE order_status = 1
+            GROUP BY ot.order_id) ot
+        LEFT JOIN ttms.ticket t
+            ON ot.ticket_id = t.ticket_id
+        LEFT JOIN ttms.schedule schedule
+            ON t.schedule_id = schedule.schedule_id
+        LEFT JOIN ttms.movie m
+            ON schedule.movie_id = m.mid
+        WHERE ot.order_pay_time BETWEEN #{startTime} AND #{endTime}
+        GROUP BY m.mid
+        ORDER BY boxOffice
+        <if test="sortRule=='down'">
+            DESC
+        </if>
+        LIMIT #{start}, #{len};
+    </select>
+
+    <select id="getSales" resultMap="order">
+        SELECT order_pay_time,
+               order_price
+        FROM ttms.order
+        WHERE order_status = 1
+    </select>
+
+
+    <resultMap id="voboxoffice" type="cn.xinill.ttms.vo.VOBoxOffice">
+        <result property="movieName" column="movieName"/>
+        <result property="boxOffice" column="boxOffice"/>
+    </resultMap>
+
+    <resultMap id="order" type="cn.xinill.ttms.po.Order">
+        <result property="payTime" column="order_pay_time"/>
+        <result property="price" column="order_price"/>
+    </resultMap>
+</mapper>

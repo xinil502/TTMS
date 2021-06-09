@@ -86,8 +86,9 @@ public class MovieServiceImpl implements IMovieService {
         if(search != null){
             search = '%'+search+'%';
         }
+        System.out.println(search);
         //获取总电影数
-        movieList.setSum(movieMapper.countMovie());
+        movieList.setSum(movieMapper.countMovie(search));
 
         //获取当前页电影信息
         List<Movie> list = movieMapper.getMovieList(sortType, sortRule, start, len, search);
@@ -96,7 +97,7 @@ public class MovieServiceImpl implements IMovieService {
             VOMovie voMovie = new VOMovie();
             voMovie.setMid(movie.getMid());
             voMovie.setTitle(movie.getTitle());
-            voMovie.setActor(movie.getTitle().split(";"));
+            voMovie.setActor(movie.getActor().split(";"));
             voMovie.setType(movie.getType().split(";"));
             voMovie.setArea(movie.getArea().split(";"));
             voMovie.setLanguage(movie.getLanguage().split(";"));
@@ -117,7 +118,7 @@ public class MovieServiceImpl implements IMovieService {
         Movie movie =  movieMapper.getMovie(mid);
         VOMovie voMovie = new VOMovie();
         voMovie.setTitle(movie.getTitle());
-        voMovie.setActor(movie.getTitle().split(";"));
+        voMovie.setActor(movie.getActor().split(";"));
         voMovie.setType(movie.getType().split(";"));
         voMovie.setArea(movie.getArea().split(";"));
         voMovie.setLanguage(movie.getLanguage().split(";"));

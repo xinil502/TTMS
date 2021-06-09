@@ -29,21 +29,25 @@
     <select id="selectScheduleById" parameterType="_int" resultMap="schedule">
         SELECT *
         FROM ttms.schedule
-        WHERE schedule_id = #{id}
+        WHERE schedule_id = #{id};
     </select>
 
     <select id="countAllSchedule" parameterType="_int" resultType="_int">
         SELECT COUNT(*)
         FROM ttms.schedule
-        WHERE movie_id = #{movieId}
+        <if test="movieId != -1">
+            WHERE movie_id = #{movieId}
+        </if>
     </select>
 
     <select id="countUserSchedule" resultType="_int">
         SELECT COUNT(*)
         FROM ttms.schedule
-        WHERE movie_id = #{movieId}
-          AND schedule.schedule_status = 1
+        WHERE schedule.schedule_status = 1
           AND schedule_start_time > #{time}
+        <if test="movieId != -1">
+          AND movie_id = #{movieId}
+        </if>;
     </select>
 
     <select id="selectAllScheduleList" resultMap="voschedule">
@@ -64,7 +68,7 @@
         LEFT JOIN ttms.movie movie ON movie.mid = schedule.movie_id
         LEFT JOIN ttms.studio studio ON studio.studio_id = schedule.studio_id
         ORDER BY ${sortName} ${sortRule}
-        LIMIT ${index}, ${len}
+        LIMIT ${index}, ${len};
     </select>
 
     <select id="selectUserScheduleList" resultMap="voschedule">
@@ -80,7 +84,7 @@
         FROM (
             SELECT * FROM ttms.schedule
             WHERE schedule.schedule_status = 1
-            AND schedule_start_time > #{time}
+                AND schedule_start_time > #{time}
               <if test="movieId != -1">
                 AND schedule.movie_id = #{movieId}
               </if>

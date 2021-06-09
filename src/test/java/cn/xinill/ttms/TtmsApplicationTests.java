@@ -11,6 +11,7 @@ class TtmsApplicationTests {
 
     @Test
     void contextLoads() {
+        System.out.println(System.currentTimeMillis());
     }
 
 }

@@ -15,7 +15,7 @@ public interface IMovieMapper {
     /**
      * 统计在映电影个数
      */
-    int countMovie();
+    int countMovie(String search);
 
     /**
      * 新增电影信息

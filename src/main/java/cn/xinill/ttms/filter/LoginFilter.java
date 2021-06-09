@@ -32,7 +32,10 @@ public class LoginFilter implements Filter {
             //登陆放行
             if(((HttpServletRequest) request).getMethod().equals("OPTIONS")
                     || servletPath.startsWith("/user/login")
-                    || servletPath.startsWith("/staff/login")){
+                    || servletPath.startsWith("/staff/login")
+                    || ((HttpServletRequest) request).getMethod().equals("GET") && servletPath.startsWith("/movie")
+                    || ((HttpServletRequest) request).getMethod().equals("GET") && servletPath.startsWith("/schedule")
+                    || ((HttpServletRequest) request).getMethod().equals("GET") && servletPath.startsWith("/ticket")){
                 filterChain.doFilter(request,response);
                 return;
             }
@@ -46,16 +49,12 @@ public class LoginFilter implements Filter {
                     throw new MyException("token已经过期，需要登陆");
                 }else {
                     logger.info("______________token已解析 id = " + verifyToken[0] +"  role = " + verifyToken[1]+"_______________");
-                    if(verifyToken[0] == 1
-                            ||((HttpServletRequest) request).getMethod().equals("GET") && servletPath.startsWith("/movie")
-                            || ((HttpServletRequest) request).getMethod().equals("GET") && servletPath.startsWith("/schedule")
-                            || ((HttpServletRequest) request).getMethod().equals("GET") && servletPath.startsWith("/ticket")){
-
+                    if(verifyToken[0] == 1){
                     }else if(verifyToken[1] != 6 && servletPath.startsWith("/staff/updatePwd")){
                     }else if(verifyToken[1] == 6 && (servletPath.startsWith("/user"))){
                     }else if(verifyToken[1] == 1 && (servletPath.startsWith("/ticket")
                                                     || servletPath.startsWith("/order"))){
-                    }else if(verifyToken[1] == 2 && (false)){
+                    }else if(verifyToken[1] == 2 && (servletPath.startsWith("/statistics"))){
                     }else if(verifyToken[1] == 3 && (servletPath.startsWith("/staff")
                                                     || servletPath.startsWith("/movie")
                                                     || servletPath.startsWith("/studio")

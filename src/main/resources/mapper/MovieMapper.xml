@@ -8,9 +8,12 @@
     <!--开启缓存-->
     <cache/>
 
-    <select id="countMovie" resultType="_int">
+    <select id="countMovie" parameterType="string" resultType="_int">
         SELECT count(*)
         FROM ttms.movie
+        <if test="search != null">
+            WHERE title LIKE #{search}
+        </if>
     </select>
 
     <insert id="insertMovie" parameterType="movie">

@@ -34,7 +34,13 @@ public interface ITicketService {
     Boolean saleTickets(VOTicketOrder saleTicket, int userId) throws MyException;
 
 
+    /**
+     * 用户添加订单
+     *
+     * @return
+     */
     Boolean addOrderTicket(long orderId, int ticketId);
+
     /**
      * 根据订单 id查询电影票
      */
